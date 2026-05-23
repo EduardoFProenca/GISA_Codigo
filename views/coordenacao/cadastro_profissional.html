@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastrar Profissional — Coordenação APAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/gisa.css" />
+  <style>
+    /* Estilos extras apenas para garantir o alinhamento dos novos campos automáticos */
+    .field-group {
+      display: flex;
+      gap: 8px;
+    }
+    .field-group input {
+      flex: 1;
+    }
+    .gen-btn {
+      background: #e2e8f0;
+      border: none;
+      padding: 0 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .gen-btn:hover {
+      background: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <a class="back-btn" href="dashboard.html">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Voltar
+      </a>
+      <div>
+        <h1>Cadastrar Novo Profissional</h1>
+        <p>Adicionar ao corpo clínico</p>
+      </div>
+    </div>
+    <button class="save-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+      </svg>
+      Salvar Cadastro
+    </button>
+  </div>
+</header>
+
+<div class="form-main">
+  <div class="form-card">
+
+    <div class="form-section">
+      <p class="section-title">Dados Pessoais</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nome Completo <span class="req">*</span></label>
+          <input type="text" placeholder="Ex: Dr. Roberto Almeida" />
+        </div>
+        <div class="field">
+          <label>CPF <span class="req">*</span></label>
+          <input type="text" placeholder="000.000.000-00" id="inp-cpf" />
+        </div>
+        <div class="field">
+          <label>Data de Nascimento</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label>RG</label>
+          <input type="text" placeholder="00.000.000-0" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <p class="section-title">Dados de Acesso ao Sistema</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>ID de Usuário <span class="req">*</span> <small style="color: #64748b;">(Automático via CPF)</small></label>
+          <input type="text" id="inp-usuario" placeholder="Preenchido automaticamente" readonly style="background-color: #f8fafc; cursor: not-allowed;" />
+        </div>
+        <div class="field">
+          <label>Senha Provisória <span class="req">*</span></label>
+          <div class="field-group">
+            <input type="text" id="inp-senha" placeholder="Digite ou gere uma senha" />
+            <button type="button" class="gen-btn" onclick="gerarSenhaAutomatica()">Gerar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <p class="section-title">Informações Profissionais</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Especialidade <span class="req">*</span></label>
+          <div class="specialty-wrap">
+            <input type="text" id="spec-input" placeholder="Digite para buscar especialidades..."
+              autocomplete="off" oninput="filterSpecs()" onfocus="openDropdown()" onblur="setTimeout(closeDropdown,200)" />
+            <div class="specialty-dropdown" id="spec-dropdown"></div>
+          </div>
+          <div class="tags" id="spec-tags"></div>
+        </div>
+        <div class="field">
+          <label>Registro Profissional <span class="req">*</span></label>
+          <input type="text" placeholder="Ex: CRM-SP 123456" />
+        </div>
+        <div class="field">
+          <label>Estado do Registro</label>
+          <select>
+            <option value="" disabled selected>Selecione o estado</option>
+            <option>São Paulo</option>
+            <option>Rio de Janeiro</option>
+            <option>Minas Gerais</option>
+            <option>Bahia</option>
+            <option>Paraná</option>
+            <option>Rio Grande do Sul</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Carga Horária Semanal</label>
+          <input type="text" placeholder="Ex: 40 horas" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="pj-toggle-row">
+        <p class="section-title">Pessoa Jurídica (PJ)</p>
+        <label class="toggle-label">
+          <input type="checkbox" id="pj-check" onchange="togglePJ()" />
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span>Profissional atua como PJ</span>
+        </label>
+      </div>
+      <div class="form-grid pj-fields" id="pj-fields">
+        <div class="field">
+          <label>CNPJ <span class="req">*</span></label>
+          <input type="text" placeholder="00.000.000/0000-00" id="inp-cnpj" />
+        </div>
+        <div class="field">
+          <label>Razão Social <span class="req">*</span></label>
+          <input type="text" placeholder="Ex: Roberto Almeida Serviços Médicos LTDA" />
+        </div>
+        <div class="field">
+          <label>Nome Fantasia</label>
+          <input type="text" placeholder="Ex: Clínica Dr. Roberto" />
+        </div>
+        <div class="field">
+          <label>Inscrição Estadual</label>
+          <input type="text" placeholder="000.000.000.000" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <p class="section-title">Contato</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>E-mail <span class="req">*</span></label>
+          <input type="email" placeholder="profissional@email.com" />
+        </div>
+        <div class="field">
+          <label>Telefone <span class="req">*</span></label>
+          <input type="text" placeholder="(11) 98765-4321" id="inp-tel" />
+        </div>
+        <div class="field form-col-2">
+          <label>Endereço</label>
+          <input type="text" placeholder="Ria, número, bairro, cidade — Estado, CEP" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── ESPECIALIDADES ── */
+  const SPECIALTIES = [
+    'Neurologista Pediátrico','Fisioterapeuta','Fonoaudiólogo(a)','Psicólogo(a)',
+    'Terapeuta Ocupacional','Pediatra','Psiquiatra','Nutricionista','Ortopedista',
+    'Oftalmologista','Cardiologista','Endocrinologista','Assistente Social',
+    'Educador Físico','Musicoterapeuta','Arte Terapeuta'
+  ];
+  let selected = [];
+
+  function renderDropdown(list) {
+    const dd = document.getElementById('spec-dropdown');
+    dd.innerHTML = list.map(s =>
+      `<button class="spec-option" onmousedown="addSpec('${s}')">${s}</button>`
+    ).join('');
+  }
+  function filterSpecs() {
+    const q = document.getElementById('spec-input').value.toLowerCase();
+    const filtered = SPECIALTIES.filter(s => s.toLowerCase().includes(q) && !selected.includes(s));
+    renderDropdown(filtered);
+    document.getElementById('spec-dropdown').classList.add('open');
+  }
+  function openDropdown() {
+    renderDropdown(SPECIALTIES.filter(s => !selected.includes(s)));
+    document.getElementById('spec-dropdown').classList.add('open');
+  }
+  function closeDropdown() {
+    document.getElementById('spec-dropdown').classList.remove('open');
+  }
+  function addSpec(name) {
+    if (!selected.includes(name)) { selected.push(name); renderTags(); }
+    document.getElementById('spec-input').value = '';
+    closeDropdown();
+  }
+  function removeSpec(name) {
+    selected = selected.filter(s => s !== name);
+    renderTags();
+  }
+  function renderTags() {
+    document.getElementById('spec-tags').innerHTML = selected.map(s => `
+      <span class="tag" onclick="removeSpec('${s}')">
+        ${s}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </span>`).join('');
+  }
+
+  /* ── PJ TOGGLE ── */
+  function togglePJ() {
+    document.getElementById('pj-fields').classList.toggle('open', document.getElementById('pj-check').checked);
+  }
+
+  /* ── GERADOR DE SENHA AUTOMÁTICA ── */
+  function gerarSenhaAutomatica() {
+    const caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
+    let senha = "";
+    for (let i = 0; i < 8; i++) {
+      senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    document.getElementById('inp-senha').value = senha;
+  }
+
+  /* ── MÁSCARAS E EVENTOS ── */
+  document.getElementById('inp-cpf').addEventListener('input', function() {
+    let raw = this.value.replace(/\D/g,''); // Apenas os números
+    let v = raw.slice(0,11);
+    
+    // Atualiza automaticamente o campo de ID/Usuário com o número limpo do CPF
+    document.getElementById('inp-usuario').value = raw.slice(0,11);
+
+    if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+    this.value = v;
+  });
+
+  document.getElementById('inp-tel').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/,'($1) $2');
+    this.value = v;
+  });
+
+  document.getElementById('inp-cnpj').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').slice(0,14);
+    if (v.length > 12) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,'$1.$2.$3/$4-$5');
+    else if (v.length > 8) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/,'$1.$2.$3/$4');
+    else if (v.length > 5) v = v.replace(/(\d{2})(\d{3})(\d{0,3})/,'$1.$2.$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,3})/,'$1.$2');
+    this.value = v;
+  });
+</script>
+
+</body>
+</html>

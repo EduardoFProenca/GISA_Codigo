@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Paciente APAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/gisa.css" />
+  <style>
+    /* Portal Paciente — accent roxo */
+    :root {
+      --accent:    #a855f7;
+      --accent-lt: #faf5ff;
+      --accent-dk: #9333ea;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Portal do Paciente</h1>
+        <p>APAE — Acompanhamento</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" title="Notificações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+      <button class="text-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sair
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Welcome -->
+  <div class="welcome">
+    <h2>Olá, Maria Santos! 👋</h2>
+    <p>Acompanhamento de Lucas Oliveira Santos</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">Próximas Consultas</p>
+        <p class="stat-value">3</p>
+      </div>
+      <div class="stat-icon si-blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">Consultas Realizadas</p>
+        <p class="stat-value">7</p>
+      </div>
+      <div class="stat-icon si-green">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">Receitas Ativas</p>
+        <p class="stat-value">2</p>
+      </div>
+      <div class="stat-icon si-purple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content grid -->
+  <div class="content-grid">
+
+    <!-- Col esquerda: ações + evolução -->
+    <div class="col-left">
+
+      <div class="card">
+        <div class="card-header">Ações Rápidas</div>
+        <div class="card-body">
+          <div class="quick-grid">
+
+            <button class="quick-btn">
+              <div class="q-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div>
+                <p class="q-title">Ver Histórico</p>
+                <p class="q-sub">Consultas anteriores</p>
+              </div>
+            </button>
+
+            <button class="quick-btn">
+              <div class="q-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+              <div>
+                <p class="q-title">Avaliar Atendimentos</p>
+                <p class="q-sub">Deixe seu feedback</p>
+              </div>
+            </button>
+
+            <button class="quick-btn">
+              <div class="q-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                </svg>
+              </div>
+              <div>
+                <p class="q-title">Receitas e Documentos</p>
+                <p class="q-sub">Visualizar prescrições</p>
+              </div>
+            </button>
+
+            <button class="quick-btn">
+              <div class="q-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div>
+                <p class="q-title">Gerenciar Dependentes</p>
+                <p class="q-sub">Adicionar ou editar</p>
+              </div>
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Evolução do Tratamento</div>
+        <div class="card-body">
+          <div class="progress-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <div>
+              <h3>Progresso Positivo</h3>
+              <p>Melhora significativa na comunicação não-verbal e redução de comportamentos repetitivos.</p>
+            </div>
+          </div>
+          <div class="progress-meta">
+            <div class="meta-block">
+              <p class="meta-label">Último atendimento</p>
+              <p class="meta-value">25/10/2025</p>
+            </div>
+            <div class="meta-block">
+              <p class="meta-label">Profissional</p>
+              <p class="meta-value">Dr. Carlos Eduardo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Col direita: próximas consultas -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-header">Próximas Consultas</div>
+      <div class="card-body">
+        <div class="consult-list">
+
+          <div class="consult-item">
+            <div class="consult-meta">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="consult-date">03/11 às 11:00</span>
+            </div>
+            <p class="consult-prof">Dr. Roberto Almeida</p>
+            <p class="consult-type">Consulta Neurológica</p>
+            <button class="cancel-link">Cancelar consulta</button>
+          </div>
+
+          <div class="consult-item">
+            <div class="consult-meta">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="consult-date">05/11 às 10:00</span>
+            </div>
+            <p class="consult-prof">Dr. Marcos Vieira</p>
+            <p class="consult-type">Avaliação Neuropsiquiátrica</p>
+            <button class="cancel-link">Cancelar consulta</button>
+          </div>
+
+          <div class="consult-item">
+            <div class="consult-meta">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="consult-date">06/11 às 14:30</span>
+            </div>
+            <p class="consult-prof">Dr. Carlos Eduardo</p>
+            <p class="consult-type">Psicoterapia</p>
+            <button class="cancel-link">Cancelar consulta</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>

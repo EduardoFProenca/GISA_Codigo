@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GISA — APAE de Saúde</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container-login">
+        <div class="logo-container">
+            <img src="./assets/img_logoApae.png" alt="Logo APAE de Saúde" class="logo-login">
+        </div>
+        <h2>APAE de Saúde</h2>
+        <h6>Sistema de Gestão Integrada</h6>
+        <div class="card">
+            <h3>Acesso ao Sistema</h3>
+            <h6>Informe seu ID de cadastro e senha para continuar</h6>
+            <label for="usuario">ID de Cadastro:</label>
+            <input type="text" id="usuario" placeholder="Digite seu ID numérico">
+            <label for="senha">Sua Senha:</label>
+            <input type="password" id="senha" name="senha" minlength="8" required
+                placeholder="Digite sua senha" autocomplete="current-password">
+            <button onclick="fazerLogin()">Entrar</button>
+        </div>
+    </div>
+    <footer>
+        <p><small>&copy; 2026 APAE de Saúde. Todos os direitos reservados.</small></p>
+    </footer>
+    <script src="./models/Usuario.js"></script>
+    <script src="./controllers/authController.js"></script>
+</body>
+</html>
