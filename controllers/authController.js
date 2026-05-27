@@ -43,21 +43,79 @@ function getUsuario() {
 /**
  * Chamado pelo botão "Entrar" no index.html.
  * Autentica via Model Usuario e redireciona para o portal do perfil.
+ * 
+ * ETAPAS:
+ * 1. Captura os valores dos inputs e valida se não estão vazios
+ * 2. Chama a função de autenticação do Model Usuario
+ * 3. Se autenticado, armazena a sessão e obtém a rota de dashboard
+ * 4. Redireciona para o dashboard apropriado do perfil do usuário
  */
-function fazerLogin() {
-  const id    = document.getElementById('usuario').value.trim();
-  const senha = document.getElementById('senha').value;
+async function fazerLogin() {
+  // =========================================================================
+  // ETAPA 1: Captura de Dados e Validação Básica
+  // =========================================================================
+  const usuarioInput = document.getElementById('usuario');
+  const senhaInput = document.getElementById('senha');
 
-  // Delega autenticação ao Model (não mistura regra de negócio no controller)
-  const sessao = Usuario.autenticar(id, senha);
+  const id = usuarioInput.value.trim();
+  const senha = senhaInput.value.trim();
 
-  if (!sessao) {
-    alert('ID ou senha incorretos.');
+  if (!id) {
+    alert('Por favor, informe seu ID de cadastro.');
+    usuarioInput.focus();
     return;
   }
 
-  _salvarSessao(sessao);
-  window.location.href = Usuario.rotaPorPerfil(sessao.perfil);
+  if (!senha) {
+    alert('Por favor, informe sua senha.');
+    senhaInput.focus();
+    return;
+  }
+
+  try {
+    // =========================================================================
+    // ETAPA 2 & 3: Chamada Real da API (Assíncrona) e Verificação
+    // =========================================================================
+    // Ajuste a URL abaixo para o endpoint exato de login do seu Spring Boot
+    const resposta = await fetch('http://localhost:8080/gisa-api/api/usuarios/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: Number(id), senha: senha })
+    });
+
+    // Se o back-end retornar um status de erro (como 401 ou 404)
+    if (!resposta.ok) {
+      alert('ID de cadastro ou senha inválidos. Tente novamente.');
+      senhaInput.value = '';
+      usuarioInput.focus();
+      return;
+    }
+
+    // Se chegou aqui, as credenciais estão certas no banco!
+    const dadosUsuario = await resposta.json();
+
+    // =========================================================================
+    // ETAPA 4: Armazenamento e Redirecionamento
+    // =========================================================================
+    // Monta o objeto de sessão básico exigido pelo restante do script
+    const sessao = {
+      id: dadosUsuario.id,
+      nome: dadosUsuario.nome || 'Profissional',
+      perfil: 'profissional' // Forçado simplificado como você pediu
+    };
+
+    // Salva no sessionStorage para manter o usuário logado entre as páginas
+    _salvarSessao(sessao);
+
+    // Redireciona direto para o painel da coordenação
+    window.location.href = 'http://127.0.0.1:5500/views/coordenacao/dashboard.html';
+
+  } catch (erro) {
+    console.error('Erro ao tentar conectar com o servidor:', erro);
+    alert('Não foi possível conectar ao servidor do GISA. Verifique se o back-end está rodando.');
+  }
 }
 
 /**
@@ -66,8 +124,8 @@ function fazerLogin() {
  */
 function logout() {
   sessionStorage.removeItem('usuario');
-  const partes    = window.location.pathname.split('/').filter(Boolean);
-  const prefixo   = partes.length >= 2 ? '../../' : './';
+  const partes = window.location.pathname.split('/').filter(Boolean);
+  const prefixo = partes.length >= 2 ? '../../' : './';
   window.location.href = prefixo + 'index.html';
 }
 
@@ -116,3 +174,13 @@ function _resolverRaiz() {
   const partes = window.location.pathname.split('/').filter(Boolean);
   return partes.length >= 2 ? '../../' : './';
 }
+
+// ============================================================================
+// Exposição Global das Funções
+// ============================================================================
+// Como o frontend pode usar ES Modules, as funções precisam estar disponíveis
+// globalmente para serem chamadas via onclick do HTML
+window.fazerLogin = fazerLogin;
+window.logout = logout;
+window.exigirLogin = exigirLogin;
+window.getUsuario = getUsuario;
