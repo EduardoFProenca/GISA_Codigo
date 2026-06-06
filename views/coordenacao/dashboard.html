@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — Coordenação APAE</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../css/gisa.css" />
 </head>
 <body>
@@ -41,6 +40,7 @@
 
 <main>
 
+  <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-card">
       <div>
@@ -77,14 +77,16 @@
     </div>
   </div>
 
+  <!-- Content grid: 2 colunas (Gestão Rápida unificada + Atividades Recentes) -->
   <div class="content-grid">
 
-    <!-- Gestão Rápida -->
+    <!-- Gestão Rápida — agora com TODOS os módulos unificados (quick-btn) -->
     <div class="card">
       <div class="card-header">Gestão Rápida</div>
       <div class="card-body">
-        <div class="quick-grid">
+        <div class="quick-grid-auto">
 
+          <!-- Ações originais da Gestão Rápida -->
           <button class="quick-btn">
             <div class="q-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -97,7 +99,6 @@
             </div>
           </button>
 
-          <!-- LINK PARA CADASTRO DE PROFISSIONAL -->
           <a class="quick-btn" href="cadastro_profissional.html">
             <div class="q-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -141,28 +142,85 @@
               </svg>
             </div>
             <div>
-              <p class="q-title">Gestão Consultas</p>
+              <p class="q-title">Gestão de Consultas</p>
               <p class="q-sub">Visualizar e gerenciar</p>
             </div>
           </button>
 
-        </div>
-      </div>
-    </div>
+          <!-- Módulos que estavam no card "Módulos de Gestão" — agora unificados aqui -->
 
-    <!-- Módulos de Gestão -->
-    <div class="card">
-      <div class="card-header">Módulos de Gestão</div>
-      <div class="card-body">
-        <div class="module-list">
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>Criação de Agenda</button>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Gestão de Agenda</button>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Gestão de Pacientes</button>
-          <a class="module-btn" href="gestao_profissionais.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Gestão de Profissionais</a>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Gestão de Atividades</button>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Gestão de Consultas</button>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Controle de Agendamentos</button>
-          <button class="module-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Visualizar Feedbacks</button>
+          <button class="quick-btn">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Gestão de Agenda</p>
+              <p class="q-sub">Visualizar e configurar</p>
+            </div>
+          </button>
+
+          <button class="quick-btn">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Gestão de Pacientes</p>
+              <p class="q-sub">Ver todos os pacientes</p>
+            </div>
+          </button>
+
+          <a class="quick-btn" href="gestao_profissionais.html">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Gestão de Profissionais</p>
+              <p class="q-sub">Ver corpo clínico</p>
+            </div>
+          </a>
+
+          <button class="quick-btn">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Gestão de Atividades</p>
+              <p class="q-sub">Programas e grupos</p>
+            </div>
+          </button>
+
+          <button class="quick-btn">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Controle de Agendamentos</p>
+              <p class="q-sub">Confirmar e remarcar</p>
+            </div>
+          </button>
+
+          <button class="quick-btn">
+            <div class="q-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div>
+              <p class="q-title">Visualizar Feedbacks</p>
+              <p class="q-sub">Avaliações recebidas</p>
+            </div>
+          </button>
+
         </div>
       </div>
     </div>

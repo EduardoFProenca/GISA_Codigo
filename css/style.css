@@ -1,11 +1,233 @@
-body{background-color:#ececec;margin:0;padding:30px;font-family:'Inter','Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:1px;color:#000;text-align:center}
-.card{background:#fff;color:#000;padding:25px;border:1px solid rgba(0,0,0,.08);border-radius:20px;width:100%;max-width:450px;margin:40px auto;box-sizing:border-box;box-shadow:0 10px 25px rgba(0,0,0,.08)}
-h1,h2,h3{font-weight:700;color:#000;margin-top:0;margin-bottom:8px}
-label{display:block;margin-bottom:6px;font-weight:600;text-align:left;color:#1e293b}
-input{width:100%;background-color:#fff;color:#000;padding:10px 14px;border-radius:8px;border:1px solid #cbd5e1;box-sizing:border-box;display:block;margin-bottom:15px;transition:border-color .2s}
-input:focus{outline:none;border-color:#0f1f25}
-button{color:#fff;background:#0f1f25;padding:12px;border-radius:10px;border:none;text-align:center;width:100%;max-width:250px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s ease;display:block;margin:20px auto 0}
-button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(15,31,37,.3);background:#1e3a45}
-button:active{transform:scale(.95)}
-.logo-container{text-align:center;margin-bottom:20px}
-.logo-login{width:110px;height:110px;object-fit:cover;display:block;margin:0 auto;border-radius:50%}
+/* ============================================================
+   style.css — Estilos da página de LOGIN (index.html)
+   Camada: VIEW (apenas visual, sem lógica de negócio)
+   ============================================================ */
+
+
+/* ── BASE ── */
+body {
+    background-color: #ececec;
+    margin: 0;
+    padding: 30px;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: 1px;
+    color: #000;
+    text-align: center;
+}
+
+/*
+  RESPONSIVIDADE — CONTAINER-LOGIN (NOVO)
+  Antes esse elemento não tinha regra CSS, por isso o conteúdo
+  ficava desalinhado em telas pequenas.
+  Agora ele centraliza o conteúdo verticalmente e horizontalmente,
+  com altura mínima de 100vh para preencher a tela toda.
+*/
+.container-login {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* padding extra para não grudar nas bordas em telas muito pequenas */
+    padding: 20px 16px;
+    box-sizing: border-box;
+}
+
+/* ── CARD (formulário de login) ── */
+.card {
+    background: #fff;
+    color: #000;
+    padding: 25px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-radius: 20px;
+    /*
+      RESPONSIVIDADE — width: 100% + max-width (já existia)
+      width: 100% → ocupa toda a tela em mobile
+      max-width: 450px → não fica largo demais no desktop
+      Essa combinação é a técnica principal para cards responsivos.
+    */
+    width: 100%;
+    max-width: 450px;
+    margin: 20px auto;
+    box-sizing: border-box;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+    text-align: left; /* NOVO: alinha o conteúdo interno à esquerda */
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    color: #000;
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-align: center; /* NOVO: títulos centralizados dentro do card */
+}
+
+h6 {
+    text-align: center; /* NOVO: subtítulos centralizados */
+    color: #6b7280;
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-align: left;
+    color: #1e293b;
+}
+
+input {
+    width: 100%;
+    background-color: #fff;
+    color: #000;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-sizing: border-box; /* garante que padding não cause overflow */
+    display: block;
+    margin-bottom: 15px;
+    transition: border-color .2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #0f1f25;
+}
+
+button {
+    color: #fff;
+    background: #0f1f25;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    width: 100%;
+    max-width: 250px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .3s ease;
+    display: block;
+    margin: 20px auto 0;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(15, 31, 37, .3);
+    background: #1e3a45;
+}
+
+button:active {
+    transform: scale(.95);
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.logo-login {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+}
+
+/* ── RODAPÉ ── */
+footer {
+    text-align: center;
+    padding: 16px 0 8px;
+    color: #6b7280;
+}
+
+
+/* ============================================================
+   ── RESPONSIVIDADE — MEDIA QUERIES ──
+
+   Estratégia: "Mobile-first adaptado"
+   Definimos os estilos base para desktop e depois ajustamos
+   para telas menores usando max-width (do maior para o menor).
+
+   Breakpoints usados:
+     ≤ 600px → Tablet pequeno / mobile grande
+     ≤ 480px → Mobile médio (maioria dos celulares)
+     ≤ 360px → Mobile pequeno (ex: iPhone SE)
+   ============================================================ */
+
+
+/* ── Tablet pequeno (≤ 600px) ──────────────────────────────── */
+@media (max-width: 600px) {
+
+    /* Reduz o espaço geral do body */
+    body {
+        padding: 16px 12px;
+    }
+
+    /* Card com margem menor */
+    .card {
+        margin: 12px auto;
+    }
+}
+
+
+/* ── Mobile médio (≤ 480px) ────────────────────────────────── */
+@media (max-width: 480px) {
+
+    /* Padding mínimo nas bordas da tela */
+    body {
+        padding: 12px 10px;
+    }
+
+    /* Card ocupa toda a largura com padding interno menor */
+    .card {
+        padding: 20px 16px;
+        margin: 8px auto;
+    }
+
+    /* Logo um pouco menor para ganhar espaço vertical */
+    .logo-login {
+        width: 88px;
+        height: 88px;
+    }
+
+    /*
+      Botão ocupa toda a largura em mobile.
+      Isso facilita o toque com o polegar (área de toque maior).
+    */
+    button {
+        max-width: 100%;
+    }
+
+    /* Título levemente menor */
+    h2 {
+        font-size: 1.2rem;
+    }
+    h3 {
+        font-size: 1rem;
+    }
+}
+
+
+/* ── Mobile pequeno (≤ 360px) ──────────────────────────────── */
+@media (max-width: 360px) {
+
+    /* Padding mínimo absoluto */
+    body {
+        padding: 8px;
+    }
+
+    /* Card sem espaço nas laterais */
+    .card {
+        padding: 16px 12px;
+    }
+
+    /* Logo ainda menor */
+    .logo-login {
+        width: 72px;
+        height: 72px;
+    }
+}

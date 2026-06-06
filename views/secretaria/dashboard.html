@@ -2,20 +2,124 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <!--
+    RESPONSIVIDADE — META VIEWPORT (ADICIONADO)
+    Esta tag é obrigatória para que o browser mobile não
+    faça zoom-out automático e renderize na largura real da tela.
+    Sem ela, toda a responsividade do CSS é ignorada no celular.
+  -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — Secretaria APAE</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f4f6f9;color:#111827;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-    .card{background:#fff;border:1px solid #e4e8ef;border-radius:12px;padding:40px 48px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-    h1{font-size:20px;font-weight:600;margin-bottom:8px}
-    p{font-size:13px;color:#6b7280;margin-bottom:24px}
-    a{display:inline-block;padding:8px 20px;background:#06b6d4;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500}
-    a:hover{background:#0891b2}
+    /* ── RESET ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /*
+      RESPONSIVIDADE — BODY COM FLEXBOX CENTRALIZADO
+      O body usa flex para centralizar o card na tela.
+      padding: 16px garante que o card não grude nas bordas em mobile.
+    */
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f4f6f9;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 16px; /* NOVO: evita que o card grude nas bordas */
+    }
+
+    /*
+      RESPONSIVIDADE — CARD COM width:100% + max-width
+      Técnica padrão para cards responsivos:
+      - width: 100%     → ocupa toda a tela em mobile
+      - max-width: 420px → não fica largo demais no desktop
+      O padding grande (40px 48px) foi substituído por padding
+      adaptável via media query abaixo.
+    */
+    .card {
+      background: #fff;
+      border: 1px solid #e4e8ef;
+      border-radius: 12px;
+      padding: 40px 48px;  /* padrão para telas grandes */
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      width: 100%;          /* NOVO: ocupa a largura disponível */
+      max-width: 420px;     /* NOVO: limita em telas largas */
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    a {
+      display: inline-block;
+      padding: 8px 20px;
+      background: #06b6d4;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    a:hover { background: #0891b2; }
+
+
+    /* ============================================================
+       ── RESPONSIVIDADE — MEDIA QUERIES ──
+       ============================================================ */
+
+    /* ── Mobile (≤ 480px) ───────────────────────────────────────
+       NOVO: reduz o padding interno do card para não desperdiçar
+       espaço em telas pequenas. */
+    /* ≥ 1400px: card um pouco mais largo em telas grandes */
+    @media (min-width: 1400px) {
+      .card { max-width: 500px; padding: 44px 52px; }
+    }
+
+    @media (max-width: 480px) {
+
+      /* Padding interno menor: de 40px 48px para 28px 20px */
+      .card {
+        padding: 28px 20px;
+      }
+
+      /* Título um pouco menor */
+      h1 { font-size: 17px; }
+    }
+
+    /* ── Mobile pequeno (≤ 360px) ───────────────────────────────
+       NOVO: ajuste final para telas muito pequenas. */
+    @media (max-width: 360px) {
+
+      .card { padding: 22px 14px; }
+
+      h1 { font-size: 15px; }
+    }
   </style>
 </head>
 <body>
+  <!--
+    VIEW do Portal Secretaria — camada View do MVC.
+    Módulo em desenvolvimento; nenhuma lógica de negócio aqui.
+  -->
   <div class="card">
     <h1>Portal — Secretaria</h1>
     <p>Módulo em desenvolvimento.</p>
