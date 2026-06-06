@@ -8,11 +8,20 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
+<<<<<<< HEAD
   <link rel="stylesheet" href="../../css/gisa.css" />
+=======
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/gisa.css" />
+  <script src="../../js/profissionalService.js" type="module"></script>
+>>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
   <style>
     .loader {
       display: none;
       text-align: center;
+<<<<<<< HEAD
       color: var(--muted);
       padding: 2rem 0;
       font-weight: 500;
@@ -387,6 +396,166 @@
       if (!list || list.length === 0) {
         document.getElementById('tbody').innerHTML = '';
         document.getElementById('cards-list').innerHTML = '';
+=======
+      color: #444;
+      padding: 1rem 0;
+      font-weight: 500;
+    }
+
+    .loader.show {
+      display: block;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .pagination button {
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #333;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background: #f4f4f4;
+    }
+
+    .pagination button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <a class="back-btn" href="dashboard.html">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </a>
+        <div>
+          <h1>Gestão de Profissionais</h1>
+          <p>Gerenciar corpo clínico</p>
+        </div>
+      </div>
+      <a class="new-btn" href="cadastro_profissional.html">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Novo Profissional
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input class="search-input" id="search" type="text" placeholder="Buscar por nome ou especialidade..." />
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        Total: <strong id="count">0 profissionais</strong>
+      </div>
+
+      <div class="table-wrap">
+        <div id="loader" class="loader">Carregando profissionais...</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Profissional</th>
+              <th>Especialidade</th>
+              <th class="col-registro">Registro</th>
+              <th class="col-email">Contato</th>
+              <th>Status</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="empty">
+          <div class="empty-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <p>Nenhum profissional encontrado para "<span id="empty-term"></span>"</p>
+        </div>
+        <div class="pagination" id="pagination">
+          <button id="prevPage" type="button" disabled>Anterior</button>
+          <button id="nextPage" type="button" disabled>Próximo</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { listarProfissionais, deletarProfissional } from '../../js/profissionalService.js';
+
+    let professionals = [];
+    let fullData = null;
+    let currentPage = 0;
+    let totalPages = 0;
+    const pageSize = 10;
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function initials(name) {
+      return String(name || '')
+        .replace(/^Dr[a]?\.\s*/i, '')
+        .split(' ')
+        .slice(0, 2)
+        .map(w => w[0] || '')
+        .join('')
+        .toUpperCase();
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('tbody');
+      const empty = document.getElementById('empty');
+
+      if (!Array.isArray(list) || list.length === 0) {
+        tbody.innerHTML = '';
+>>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
         empty.classList.add('show');
         document.getElementById('empty-term').textContent = document.getElementById('search').value;
         document.getElementById('count').textContent = '0 profissionais';
@@ -394,6 +563,7 @@
       }
 
       empty.classList.remove('show');
+<<<<<<< HEAD
       document.getElementById('count').textContent =
         `${list.length} profissiona${list.length === 1 ? 'l' : 'is'}`;
 
@@ -420,6 +590,133 @@
       document.getElementById('prevPage').disabled = true;
       document.getElementById('nextPage').disabled = true;
       document.getElementById('search').addEventListener('input', filterTable);
+=======
+      const totalCount = Number.isInteger(fullData?.totalElements) ? fullData.totalElements : list.length;
+      document.getElementById('count').textContent = `${totalCount} profissiona${totalCount === 1 ? 'l' : 'is'}`;
+
+      tbody.innerHTML = list.map(p => {
+        const nome = p.nome || '';
+        const especialidades = Array.isArray(p.especialidades)
+          ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
+          : '';
+        const registro = p.registroProfissional || '';
+        const email = p.email || '';
+        const id = p.idCadastro ?? p.id ?? '';
+
+        return `
+          <tr data-id="${escapeHtml(id)}">
+            <td>
+              <div class="prof-cell">
+                <div class="avatar">${escapeHtml(initials(nome))}</div>
+                <span class="prof-name">${escapeHtml(nome)}</span>
+              </div>
+            </td>
+            <td>${escapeHtml(especialidades)}</td>
+            <td class="muted col-registro">${escapeHtml(registro)}</td>
+            <td class="muted col-email">${escapeHtml(email)}</td>
+            <td><span class="badge green">Ativo</span></td>
+            <td class="right">
+              <div class="actions">
+                <button class="act-btn" title="Visualizar" type="button">...</button>
+                <button class="act-btn" title="Editar" type="button">...</button>
+                <button class="act-btn danger" title="Excluir" type="button" data-id="${escapeHtml(id)}">...</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('.act-btn.danger').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!id) return;
+          if (!confirm('Confirma exclusão deste profissional?')) return;
+          try {
+            const res = await deletarProfissional(id);
+            const ok = res && [200, 201, 202, 204].includes(res.status);
+            if (ok) {
+              await loadProfessionals();
+            } else {
+              alert('Falha ao excluir.');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Erro ao excluir profissional.');
+          }
+        });
+      });
+    }
+
+    function filterTable() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const filtered = professionals.filter(p => {
+        const nome = (p.nome || '').toLowerCase();
+        const especialidades = Array.isArray(p.especialidades)
+          ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(' ').toLowerCase()
+          : '';
+        return nome.includes(q) || especialidades.includes(q);
+      });
+      renderTable(filtered);
+    }
+
+    function setLoading(isLoading) {
+      const loader = document.getElementById('loader');
+      const table = document.querySelector('table');
+      if (isLoading) {
+        loader.classList.add('show');
+        table.style.opacity = '0.4';
+      } else {
+        loader.classList.remove('show');
+        table.style.opacity = '1';
+      }
+    }
+
+    function updatePaginationControls() {
+      const prevButton = document.getElementById('prevPage');
+      const nextButton = document.getElementById('nextPage');
+      prevButton.disabled = currentPage <= 0;
+      nextButton.disabled = totalPages <= 0 || currentPage >= totalPages - 1;
+    }
+
+    async function loadProfessionals(page = 0) {
+      setLoading(true);
+      try {
+        const res = await listarProfissionais(page, pageSize);
+        let data = res;
+        if (res && res.status !== undefined && res.body !== undefined) {
+          data = res.body;
+        }
+
+        fullData = data;
+        currentPage = Number.isInteger(data?.number) ? data.number : page;
+        totalPages = Number.isInteger(data?.totalPages) ? data.totalPages : 0;
+        const lista = Array.isArray(data?.content) ? data.content : (Array.isArray(data) ? data : []);
+        professionals = lista;
+        renderTable(professionals);
+        updatePaginationControls();
+      } catch (err) {
+        console.error('Erro ao carregar profissionais', err);
+        renderTable([]);
+        totalPages = 0;
+        updatePaginationControls();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProfessionals();
+      document.getElementById('search').addEventListener('input', filterTable);
+      document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 0) {
+          loadProfessionals(currentPage - 1);
+        }
+      });
+      document.getElementById('nextPage').addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+          loadProfessionals(currentPage + 1);
+        }
+      });
+>>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
     });
   </script>
 

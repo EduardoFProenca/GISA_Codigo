@@ -183,4 +183,8 @@ function _resolverRaiz() {
 window.fazerLogin = fazerLogin;
 window.logout = logout;
 window.exigirLogin = exigirLogin;
+<<<<<<< HEAD
 window.getUsuario = getUsuario;
+=======
+window.getUsuario = getUsuario;
+>>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
