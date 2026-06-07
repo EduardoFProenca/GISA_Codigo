@@ -41,19 +41,24 @@ function deleteProfissional(id) {
 /* ── Renderiza TABELA (desktop) ── */
 function renderTabela(list) {
   const tbody = document.getElementById('tbody');
-  tbody.innerHTML = list.map(p => {
-    // Verifica se possui alguma especialidade cadastrada
+  
+  tbody.innerHTML = list.map((p, index) => {
     const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
     
-    // Define o texto da especialidade
+    // Transforma as especialidades em blocos HTML de Tags (Pills)
     const espList = temEspecialidade
-      ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
+      ? p.especialidades
+          .map(e => {
+            const nome = typeof e === 'object' ? (e?.nome || '') : e;
+            return nome ? `<span class="esp-chip">${esc(nome)}</span>` : '';
+          })
+          .filter(Boolean)
+          .join('')
       : '-';
       
-    // Define o texto do registro com base na mesma regra
     const registro = temEspecialidade ? (p.registroProfissional || '-') : '-';
-    
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
+    
     return `
     <tr data-id="${esc(p.id)}">
       <td>
@@ -62,17 +67,19 @@ function renderTabela(list) {
           <span class="prof-name">${esc(p.nome)}</span>
         </div>
       </td>
-      <td>${esc(espList)}</td>
+      <td>
+        <div class="esp-container">${espList}</div>
+      </td>
       <td class="muted col-registro">${esc(registro)}</td>
       <td class="muted col-email">${esc(p.email || '')}</td>
       <td><span class="badge dot ${badge}">${esc(p.status)}</span></td>
-      <td class="right" data-actions="${esc(p.id)}"></td>
+      <td class="right" data-actions="${index}"></td>
     </tr>`;
   }).join('');
 
-  /* Injeta botões com eventos (não dá para fazer inline com addEventListener) */
-  list.forEach(p => {
-    const cell = tbody.querySelector(`[data-actions="${esc(p.id)}"]`);
+  /* Injeta botões com eventos usando o index garantido por linha */
+  list.forEach((p, index) => {
+    const cell = tbody.querySelector(`[data-actions="${index}"]`);
     if (cell) cell.appendChild(actionButtons(p.id));
   });
 }
@@ -83,17 +90,19 @@ function renderCards(list) {
   container.innerHTML = '';
 
   list.forEach(p => {
-    // Verifica se possui alguma especialidade cadastrada
     const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
     
-    // Define o texto da especialidade
     const espList = temEspecialidade
-      ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
+      ? p.especialidades
+          .map(e => {
+            const nome = typeof e === 'object' ? (e?.nome || '') : e;
+            return nome ? `<span class="esp-chip">${esc(nome)}</span>` : '';
+          })
+          .filter(Boolean)
+          .join('')
       : '-';
       
-    // Define o texto do registro com base na mesma regra
     const registro = temEspecialidade ? (p.registroProfissional || '-') : '-';
-    
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
 
     const card = document.createElement('div');
@@ -107,7 +116,7 @@ function renderCards(list) {
     <div class="pc-details">
       <div class="pc-field">
         <span class="pc-label">Especialidade</span>
-        <span class="pc-value">${esc(espList)}</span>
+        <div class="esp-container">${espList}</div>
       </div>
       <div class="pc-field">
         <span class="pc-label">Registro</span>
@@ -143,7 +152,7 @@ function renderAll(list) {
     `${list.length} profissiona${list.length === 1 ? 'l' : 'is'}`;
 
   renderTabela(list);
-  renderCards(list);    /* mobile  */
+  renderCards(list);
 }
 
 /* ── Filtra pelo texto de busca ── */
@@ -152,7 +161,8 @@ function filterTable() {
   const filtered = q
     ? professionals.filter(p => {
       const esp = Array.isArray(p.especialidades)
-        ? p.especialidades.map(e => e?.nome || '').join(' ').toLowerCase() : '';
+        ? p.especialidades.map(e => (typeof e === 'object' ? (e?.nome || '') : e)).join(' ').toLowerCase() 
+        : '';
       return (p.nome || '').toLowerCase().includes(q) || esp.includes(q);
     })
     : professionals;
@@ -167,7 +177,6 @@ async function loadProfessionals(page = 0) {
     const res = await listarProfissionais(page, pageSize);
     if (res && res.status >= 200 && res.status < 300) {
       const data = res.body || {};
-      // Support both pageable response ({ content: [...] }) and direct array responses
       if (Array.isArray(data)) {
         professionals = data;
       } else if (Array.isArray(data.content)) {

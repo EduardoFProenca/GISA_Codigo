@@ -658,3 +658,23 @@ input[type="checkbox"]:checked + .toggle-track .toggle-thumb { transform: transl
   td, thead th   { padding: 8px; font-size: 12px; }
   .prof-name     { max-width: 90px; }
 }
+
+/* Especialidades na tabela de profissionais */
+.esp-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.esp-chip {
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
