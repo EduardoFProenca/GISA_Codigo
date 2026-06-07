@@ -73,7 +73,6 @@
   <div class="form-main">
     <div class="form-card">
 
-<<<<<<< HEAD
       <div class="form-section">
         <p class="section-title">Dados Pessoais</p>
         <div class="form-grid">
@@ -92,7 +91,6 @@
           <div class="field">
             <label>RG</label>
             <input type="text" placeholder="00.000.000-0" />
-=======
     <div class="form-section">
       <p class="section-title">Dados Pessoais</p>
       <div class="form-grid">
@@ -127,7 +125,6 @@
           <div class="field-group">
             <input type="text" id="inp-senha" placeholder="Digite ou gere uma senha" />
             <button type="button" class="gen-btn" onclick="gerarSenhaAutomatica()">Gerar</button>
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
           </div>
         </div>
       </div>
@@ -148,8 +145,6 @@
               <button type="button" class="gen-btn" onclick="gerarSenhaAutomatica()">Gerar</button>
             </div>
           </div>
-<<<<<<< HEAD
-=======
           <div class="tags" id="spec-tags"></div>
         </div>
         <div class="field">
@@ -171,11 +166,9 @@
         <div class="field">
           <label>Carga Horária Semanal</label>
           <input type="text" id="inp-carga" placeholder="Ex: 40 horas" />
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
         </div>
       </div>
 
-<<<<<<< HEAD
       <div class="form-section">
         <p class="section-title">Informações Profissionais</p>
         <div class="form-grid">
@@ -208,7 +201,6 @@
             <label>Carga Horária Semanal</label>
             <input type="text" placeholder="Ex: 40 horas" />
           </div>
-=======
     <div class="form-section">
       <div class="pj-toggle-row">
         <p class="section-title">Pessoa Jurídica (PJ)</p>
@@ -234,11 +226,9 @@
         <div class="field">
           <label>Inscrição Estadual</label>
           <input type="text" id="inp-inscricaoEstadual" placeholder="000.000.000.000" />
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
         </div>
       </div>
 
-<<<<<<< HEAD
       <div class="form-section">
         <div class="pj-toggle-row">
           <p class="section-title">Pessoa Jurídica (PJ)</p>
@@ -266,7 +256,6 @@
           <div class="field">
             <label>Inscrição Estadual</label>
             <input type="text" placeholder="000.000.000.000" />
-=======
     <div class="form-section">
       <p class="section-title">Contato</p>
       <div class="form-grid">
@@ -313,7 +302,6 @@
                 <input type="text" id="inp-estado" placeholder="SP" maxlength="2" />
               </div>
             </div>
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
           </div>
         </div>
       </div>
@@ -339,7 +327,6 @@
     </div>
   </div>
 
-<<<<<<< HEAD
   <script>
     const SPECIALTIES = [
       'Neurologista Pediátrico', 'Fisioterapeuta', 'Fonoaudiólogo(a)', 'Psicólogo(a)',
@@ -385,87 +372,12 @@
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </span>`).join('');
-=======
-<script>
-  /* ── ESPECIALIDADES (dinâmico) ── */
-  let SPECIALTIES = [];
-  var selected = []; // armazena IDs numéricos (exposto em window)
-  const idNameMap = {};
-
-  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-  function renderDropdown(list) {
-    const dd = document.getElementById('spec-dropdown');
-    dd.innerHTML = list.map(item => {
-      const id = item.id;
-      const name = item.nome || item.name || item.label || String(item);
-      return `<button class="spec-option" data-id="${id}" data-name="${escapeHtml(name)}" onmousedown="addSpecFromButton(this)">${escapeHtml(name)}</button>`;
-    }).join('');
-  }
-  function addSpecFromButton(btn){ const id = Number(btn.dataset.id); const name = btn.dataset.name; addSpec(id, name); }
-
-  function filterSpecs() {
-    const q = document.getElementById('spec-input').value.toLowerCase();
-    const filtered = SPECIALTIES.filter(s => (s.nome || s.name || '').toLowerCase().includes(q) && !selected.includes(s.id));
-    renderDropdown(filtered);
-    document.getElementById('spec-dropdown').classList.add('open');
-  }
-  function openDropdown() {
-    renderDropdown(SPECIALTIES.filter(s => !selected.includes(s.id)));
-    document.getElementById('spec-dropdown').classList.add('open');
-  }
-  function closeDropdown() {
-    document.getElementById('spec-dropdown').classList.remove('open');
-  }
-  function addSpec(id, name){
-    if (!selected.includes(id)){
-      selected.push(id);
-      idNameMap[id] = name;
-      renderTags();
-    }
-    document.getElementById('spec-input').value = '';
-    closeDropdown();
-  }
-  function removeSpec(id){
-    selected = selected.filter(s => s !== id);
-    delete idNameMap[id];
-    renderTags();
-  }
-  function renderTags(){
-    const container = document.getElementById('spec-tags');
-    container.innerHTML = selected.map(id => {
-      const name = idNameMap[id] || (SPECIALTIES.find(s => s.id === id) || {}).nome || id;
-      return `\n      <span class="tag" data-id="${id}" onclick="removeSpec(${id})">\n        ${escapeHtml(name)}\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">\n          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>\n        </svg>\n      </span>`;
-    }).join('');
-  }
-
-  /* ── PJ TOGGLE ── */
-  function togglePJ() {
-    document.getElementById('pj-fields').classList.toggle('open', document.getElementById('pj-check').checked);
-  }
-
-  /* ── GERADOR DE SENHA AUTOMÁTICA ── */
-  function gerarSenhaAutomatica() {
-    const caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
-    let senha = "";
-    for (let i = 0; i < 8; i++) {
-      senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
     }
 
-<<<<<<< HEAD
     /* ── PJ TOGGLE ── */
     function togglePJ() {
       document.getElementById('pj-fields').classList.toggle('open', document.getElementById('pj-check').checked);
     }
-=======
-  /* ── MÁSCARAS E EVENTOS ── */
-  document.getElementById('inp-cpf').addEventListener('input', function() {
-    let raw = this.value.replace(/\D/g,''); // Apenas os números
-    let v = raw.slice(0,11);
-    
-    // Antes: preenchimento automático do ID pelo front-end removido — agora gerado pelo sistema
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
 
     /* ── GERADOR DE SENHA AUTOMÁTICA ── */
     function gerarSenhaAutomatica() {
@@ -481,7 +393,6 @@
       let raw = this.value.replace(/\D/g, ''); // Apenas os números
       let v = raw.slice(0, 11);
 
-<<<<<<< HEAD
       document.getElementById('inp-usuario').value = raw.slice(0, 11);
 
       if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
@@ -506,27 +417,6 @@
       this.value = v;
     });
   </script>
-=======
-  // Máscara simples para CEP (00000-000)
-  const cepEl = document.getElementById('inp-cep');
-  if (cepEl) {
-    cepEl.addEventListener('input', function() {
-      let v = this.value.replace(/\D/g,'').slice(0,8);
-      if (v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/,'$1-$2');
-      this.value = v;
-    });
-  }
-
-  document.getElementById('inp-cnpj').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g,'').slice(0,14);
-    if (v.length > 12) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/,'$1.$2.$3/$4-$5');
-    else if (v.length > 8) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/,'$1.$2.$3/$4');
-    else if (v.length > 5) v = v.replace(/(\d{2})(\d{3})(\d{0,3})/,'$1.$2.$3');
-    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,3})/,'$1.$2');
-    this.value = v;
-  });
-</script>
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
 
 <div id="form-message" style="max-width:920px;margin:12px auto;color:#b91c1c;font-weight:600;"></div>
 
