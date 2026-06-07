@@ -81,16 +81,25 @@ function removeSpec(specId) {
     renderTags();
 }
 
+/* ── ALTERADO: Oculta o 'X' de remoção se estiver no modo de visualização ── */
 function renderTags() {
-    specTags.innerHTML = selectedSpecialties.map((spec) => `
-    <span class="tag" data-remove-id="${spec.id}">
-      ${spec.nome}
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
-    </span>
-  `).join('');
+    specTags.innerHTML = selectedSpecialties.map((spec) => {
+        // Se estiver visualizando, renderiza a tag blindada (sem botão de fechar)
+        if (viewMode) {
+            return `<span class="tag" style="padding-right: 12px;">${spec.nome}</span>`;
+        }
+        
+        // Renderização padrão para modo de criação/edição
+        return `
+        <span class="tag" data-remove-id="${spec.id}">
+          ${spec.nome}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </span>
+      `;
+    }).join('');
 }
 
 function togglePJ() {
@@ -154,7 +163,6 @@ function showMessage(message, isError = true) {
     }
 }
 
-/* ── FUNÇÃO DE PREENCHIMENTO ATUALIZADA (Suporta Objeto e Array de Endereço) ── */
 function populateForm(prof) {
     get('inp-nome').value = prof.nome || '';
     get('inp-cpf').value = prof.cpf ? String(prof.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '';
@@ -169,7 +177,6 @@ function populateForm(prof) {
     get('inp-usuario').value = String(sistemaId);
     get('inp-senha').value = prof.senhaProvisoria ?? prof.senha ?? '';
 
-    // Tratamento seguro: aceita tanto prof.endereco quanto prof.enderecos[0]
     let endereco = prof.endereco || {};
     if (Array.isArray(prof.enderecos) && prof.enderecos.length > 0) {
         endereco = prof.enderecos[0];
@@ -196,7 +203,7 @@ function populateForm(prof) {
     get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
 }
 
-/* ── GERENCIADOR DE MODOS REORGANIZADO E UNIFICADO ── */
+/* ── ALTERADO: Reordenamento crítico das propriedades de checagem de modo ── */
 async function loadProfessionalForEdit(id, mode = 'edit') {
     if (!id) return;
     try {
@@ -204,9 +211,12 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
         console.log("Resposta da API recebida:", res);
         if (res && res.status >= 200 && res.status < 300 && res.body) {
             const prof = res.body;
-            populateForm(prof);
+            
             editId = id;
-            viewMode = mode === 'view';
+            // FIX: Define viewMode antes do populateForm para o renderTags saber se omite os 'X'
+            viewMode = mode === 'view'; 
+            
+            populateForm(prof);
 
             const title = document.querySelector('header h1');
             const subtitle = document.querySelector('header p');
@@ -234,7 +244,6 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
                 
                 setFormReadOnly(false);
 
-                // Ocultação seletiva solicitada para o modo limitado
                 document.getElementById('inp-cpf')?.closest('.field')?.style.setProperty('display', 'none');
                 document.getElementById('inp-dataNascimento')?.closest('.field')?.style.setProperty('display', 'none');
                 document.getElementById('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
@@ -243,7 +252,6 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
                 document.getElementById('inp-tel')?.closest('.field')?.style.setProperty('display', 'none');
                 document.querySelector('.address-group')?.style.setProperty('display', 'none');
             } else {
-                // Modo comum de Edição Completa
                 if (title) title.textContent = 'Editar Profissional';
                 if (subtitle) subtitle.textContent = 'Atualizar informações do profissional';
                 if (buttonText) buttonText.textContent = 'Salvar Alterações';
@@ -349,7 +357,7 @@ async function handleSave(event) {
             : await criarProfissional(payload);
 
         if (res && (res.status === 201 || res.status === 200)) {
-            showMessage(editId ? 'Profissional atualizado com sucesso.' : 'Profissional criado com sucesso.', false);
+            showMessage(editId ? 'Profissional updated com sucesso.' : 'Profissional criado com sucesso.', false);
         } else {
             showMessage('Resposta inesperada do servidor. Verifique os dados e tente novamente.');
         }
@@ -359,6 +367,7 @@ async function handleSave(event) {
     }
 }
 
+/* ── ALTERADO: Trava interna contra cliques maliciosos no specTags ── */
 function attachListeners() {
     specInput.addEventListener('input', filterSpecs);
     specInput.addEventListener('focus', openDropdown);
@@ -370,6 +379,9 @@ function attachListeners() {
         addSpec(specId);
     });
     specTags.addEventListener('click', (event) => {
+        // Bloqueio de segurança: impede qualquer deleção se estiver no modo de visualização
+        if (viewMode) return; 
+        
         const removeButton = event.target.closest('[data-remove-id]');
         if (!removeButton) return;
         removeSpec(Number(removeButton.dataset.removeId));
@@ -382,17 +394,15 @@ function attachListeners() {
     get('inp-cep').addEventListener('input', formatCEP);
 }
 
-/* ── INICIALIZADOR UNIFICADO ── */
 async function initialize() {
     attachListeners();
     await loadSpecialties();
     
     const professionalId = getQueryParam('id');
     console.log("ID capturado da URL:", professionalId);
-    const mode = getQueryParam('mode'); // pode vir 'view', 'edit_limited' ou null
+    const mode = getQueryParam('mode'); 
 
     if (professionalId) {
-        // Passa o parâmetro 'mode' dinamicamente para o gerenciador centralizado
         await loadProfessionalForEdit(Number(professionalId), mode || 'edit');
     }
 }

@@ -34,6 +34,20 @@
     .gen-btn:hover {
       background: #cbd5e1;
     }
+
+    /* ── Estilização de campos desabilitados (Modo Visualização) ── */
+    input:disabled,
+    select:disabled {
+      background-color: #f1f5f9 !important;
+      /* Cinza claro suave */
+      color: #475569 !important;
+      /* Texto cinza escuro legível */
+      border-color: #cbd5e1 !important;
+      /* Borda suavizada */
+      cursor: not-allowed !important;
+      /* Cursor de bloqueio */
+      opacity: 0.9;
+    }
   </style>
 </head>
 
@@ -92,8 +106,10 @@
         <p class="section-title">Dados de Acesso ao Sistema</p>
         <div class="form-grid">
           <div class="field">
-            <label>ID de Usuário <span class="req">*</span> <small style="color: #64748b;">(Automático via Sistema)</small></label>
-            <input type="text" id="inp-usuario" placeholder="Preenchido automaticamente" readonly style="background:#f8fafc; color:#94a3b8;" />
+            <label>ID de Usuário <span class="req">*</span> <small style="color: #64748b;">(Automático via
+                Sistema)</small></label>
+            <input type="text" id="inp-usuario" placeholder="Preenchido automaticamente" readonly
+              style="background:#f8fafc; color:#94a3b8;" />
           </div>
           <div class="field">
             <label>Senha Provisória <span class="req">*</span></label>
@@ -111,7 +127,8 @@
           <div class="field">
             <label>Especialidade <span class="req">*</span></label>
             <div class="specialty-wrap">
-              <input type="text" id="spec-input" placeholder="Digite para buscar especialidades..." autocomplete="off" />
+              <input type="text" id="spec-input" placeholder="Digite para buscar especialidades..."
+                autocomplete="off" />
               <div class="specialty-dropdown" id="spec-dropdown"></div>
             </div>
             <div class="tags" id="spec-tags"></div>
@@ -144,7 +161,9 @@
           <p class="section-title">Pessoa Jurídica (PJ)</p>
           <label class="toggle-label">
             <input type="checkbox" id="pj-check" />
-            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            <div class="toggle-track">
+              <div class="toggle-thumb"></div>
+            </div>
             <span>Profissional atua como PJ</span>
           </label>
         </div>
