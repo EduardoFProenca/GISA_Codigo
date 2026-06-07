@@ -229,7 +229,7 @@ main {
 
 
 /* ── SEARCH ── */
-.search-wrap { position: relative; }
+.search-wrap { position: relative; margin-top: 20px; }
 .search-wrap > svg {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   color: var(--faint); pointer-events: none;
@@ -252,6 +252,7 @@ main {
 /* ── TOOLBAR ── */
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0 20px; }
 .toolbar .search-wrap { flex: 1; }
+.toolbar .search-input { margin-top: 0; }
 
 
 /* ── BADGES ── */

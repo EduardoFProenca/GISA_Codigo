@@ -9,7 +9,6 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="../../css/gisa.css" />
-  <script src="/js/profissionalService.js" type="module"></script>
   <style>
     /* Estilos extras apenas para garantir o alinhamento dos novos campos automáticos */
     .field-group {
@@ -49,7 +48,6 @@
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          <!-- <span> permite ocultar só o texto em ≤ 380px (via .back-btn span { display:none }) -->
           <span>Voltar</span>
         </a>
         <div>
@@ -64,7 +62,6 @@
           <polyline points="17 21 17 13 7 13 7 21" />
           <polyline points="7 3 7 8 15 8" />
         </svg>
-
         <span>Salvar Cadastro</span>
       </button>
     </div>
@@ -78,53 +75,19 @@
         <div class="form-grid">
           <div class="field">
             <label>Nome Completo <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: Dr. Roberto Almeida" />
+            <input type="text" id="inp-nome" placeholder="Ex: Dr. Roberto Almeida" />
           </div>
           <div class="field">
             <label>CPF <span class="req">*</span></label>
-            <input type="text" placeholder="000.000.000-00" id="inp-cpf" />
+            <input type="text" id="inp-cpf" placeholder="000.000.000-00" />
           </div>
           <div class="field">
             <label>Data de Nascimento</label>
-            <input type="date" />
+            <input type="date" id="inp-dataNascimento" />
           </div>
           <div class="field">
             <label>RG</label>
-            <input type="text" placeholder="00.000.000-0" />
-    <div class="form-section">
-      <p class="section-title">Dados Pessoais</p>
-      <div class="form-grid">
-        <div class="field">
-          <label>Nome Completo <span class="req">*</span></label>
-          <input type="text" id="inp-nome" placeholder="Ex: Dr. Roberto Almeida" />
-        </div>
-        <div class="field">
-          <label>CPF <span class="req">*</span></label>
-          <input type="text" placeholder="000.000.000-00" id="inp-cpf" />
-        </div>
-        <div class="field">
-          <label>Data de Nascimento</label>
-          <input type="date" id="inp-dataNascimento" />
-        </div>
-        <div class="field">
-          <label>RG</label>
-          <input type="text" placeholder="00.000.000-0" />
-        </div>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <p class="section-title">Dados de Acesso ao Sistema</p>
-      <div class="form-grid">
-        <div class="field">
-          <label>ID do Profissional <span class="req">*</span> <small style="color: #64748b;">(Gerado pelo Sistema)</small></label>
-          <input type="text" id="inp-usuario" placeholder="Gerado automaticamente após salvar" readonly style="background-color: #f8fafc; cursor: not-allowed;" />
-        </div>
-        <div class="field">
-          <label>Senha Provisória <span class="req">*</span></label>
-          <div class="field-group">
-            <input type="text" id="inp-senha" placeholder="Digite ou gere uma senha" />
-            <button type="button" class="gen-btn" onclick="gerarSenhaAutomatica()">Gerar</button>
+            <input type="text" id="inp-rg" placeholder="00.000.000-0" />
           </div>
         </div>
       </div>
@@ -133,39 +96,16 @@
         <p class="section-title">Dados de Acesso ao Sistema</p>
         <div class="form-grid">
           <div class="field">
-            <label>ID de Usuário <span class="req">*</span> <small style="color: #64748b;">(Automático via
-                CPF)</small></label>
-            <input type="text" id="inp-usuario" placeholder="Preenchido automaticamente" readonly
-              style="background:#f8fafc; color:#94a3b8;" />
+            <label>ID de Usuário <span class="req">*</span> <small style="color: #64748b;">(Automático via Sistema)</small></label>
+            <input type="text" id="inp-usuario" placeholder="Preenchido automaticamente" readonly style="background:#f8fafc; color:#94a3b8;" />
           </div>
           <div class="field">
             <label>Senha Provisória <span class="req">*</span></label>
             <div class="field-group">
               <input type="text" id="inp-senha" placeholder="Digite ou gere uma senha" />
-              <button type="button" class="gen-btn" onclick="gerarSenhaAutomatica()">Gerar</button>
+              <button type="button" id="btn-gerar-senha" class="gen-btn">Gerar</button>
             </div>
           </div>
-          <div class="tags" id="spec-tags"></div>
-        </div>
-        <div class="field">
-          <label>Registro Profissional <span class="req">*</span></label>
-          <input type="text" id="inp-registro" placeholder="Ex: CRM-SP 123456" />
-        </div>
-        <div class="field">
-          <label>Estado do Registro</label>
-          <select id="inp-estadoRegistro">
-            <option value="" disabled selected>Selecione o estado</option>
-            <option>São Paulo</option>
-            <option>Rio de Janeiro</option>
-            <option>Minas Gerais</option>
-            <option>Bahia</option>
-            <option>Paraná</option>
-            <option>Rio Grande do Sul</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Carga Horária Semanal</label>
-          <input type="text" id="inp-carga" placeholder="Ex: 40 horas" />
         </div>
       </div>
 
@@ -175,19 +115,18 @@
           <div class="field">
             <label>Especialidade <span class="req">*</span></label>
             <div class="specialty-wrap">
-              <input type="text" id="spec-input" placeholder="Digite para buscar especialidades..." autocomplete="off"
-                oninput="filterSpecs()" onfocus="openDropdown()" onblur="setTimeout(closeDropdown,200)" />
+              <input type="text" id="spec-input" placeholder="Digite para buscar especialidades..." autocomplete="off" />
               <div class="specialty-dropdown" id="spec-dropdown"></div>
             </div>
             <div class="tags" id="spec-tags"></div>
           </div>
           <div class="field">
             <label>Registro Profissional <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: CRM-SP 123456" />
+            <input type="text" id="inp-registro" placeholder="Ex: CRM-SP 123456" />
           </div>
           <div class="field">
             <label>Estado do Registro</label>
-            <select>
+            <select id="inp-estadoRegistro">
               <option value="" disabled selected>Selecione o estado</option>
               <option>São Paulo</option>
               <option>Rio de Janeiro</option>
@@ -199,33 +138,8 @@
           </div>
           <div class="field">
             <label>Carga Horária Semanal</label>
-            <input type="text" placeholder="Ex: 40 horas" />
+            <input type="text" id="inp-carga" placeholder="Ex: 40 horas" />
           </div>
-    <div class="form-section">
-      <div class="pj-toggle-row">
-        <p class="section-title">Pessoa Jurídica (PJ)</p>
-        <label class="toggle-label">
-          <input type="checkbox" id="pj-check" onchange="togglePJ()" />
-          <div class="toggle-track"><div class="toggle-thumb"></div></div>
-          <span>Profissional atua como PJ</span>
-        </label>
-      </div>
-      <div class="form-grid pj-fields" id="pj-fields">
-        <div class="field">
-          <label>CNPJ <span class="req">*</span></label>
-          <input type="text" id="inp-cnpj" placeholder="00.000.000/0000-00" />
-        </div>
-        <div class="field">
-          <label>Razão Social <span class="req">*</span></label>
-          <input type="text" id="inp-razaoSocial" placeholder="Ex: Roberto Almeida Serviços Médicos LTDA" />
-        </div>
-        <div class="field">
-          <label>Nome Fantasia</label>
-          <input type="text" id="inp-nomeFantasia" placeholder="Ex: Clínica Dr. Roberto" />
-        </div>
-        <div class="field">
-          <label>Inscrição Estadual</label>
-          <input type="text" id="inp-inscricaoEstadual" placeholder="000.000.000.000" />
         </div>
       </div>
 
@@ -233,75 +147,27 @@
         <div class="pj-toggle-row">
           <p class="section-title">Pessoa Jurídica (PJ)</p>
           <label class="toggle-label">
-            <input type="checkbox" id="pj-check" onchange="togglePJ()" />
-            <div class="toggle-track">
-              <div class="toggle-thumb"></div>
-            </div>
+            <input type="checkbox" id="pj-check" />
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
             <span>Profissional atua como PJ</span>
           </label>
         </div>
         <div class="form-grid pj-fields" id="pj-fields">
           <div class="field">
             <label>CNPJ <span class="req">*</span></label>
-            <input type="text" placeholder="00.000.000/0000-00" id="inp-cnpj" />
+            <input type="text" id="inp-cnpj" placeholder="00.000.000/0000-00" />
           </div>
           <div class="field">
             <label>Razão Social <span class="req">*</span></label>
-            <input type="text" placeholder="Ex: Roberto Almeida Serviços Médicos LTDA" />
+            <input type="text" id="inp-razaoSocial" placeholder="Ex: Roberto Almeida Serviços Médicos LTDA" />
           </div>
           <div class="field">
             <label>Nome Fantasia</label>
-            <input type="text" placeholder="Ex: Clínica Dr. Roberto" />
+            <input type="text" id="inp-nomeFantasia" placeholder="Ex: Clínica Dr. Roberto" />
           </div>
           <div class="field">
             <label>Inscrição Estadual</label>
-            <input type="text" placeholder="000.000.000.000" />
-    <div class="form-section">
-      <p class="section-title">Contato</p>
-      <div class="form-grid">
-        <div class="field">
-          <label>E-mail <span class="req">*</span></label>
-          <input type="email" id="inp-email" placeholder="profissional@email.com" />
-        </div>
-        <div class="field">
-          <label>Telefone <span class="req">*</span></label>
-          <input type="text" placeholder="(11) 98765-4321" id="inp-tel" />
-        </div>
-        <div class="field form-col-2 address-group">
-          <label>Endereço</label>
-          <div class="field-group" style="flex-direction:column; gap:8px;">
-            <div class="field">
-              <label>CEP <span class="req">*</span></label>
-              <input type="text" id="inp-cep" placeholder="00000-000" />
-            </div>
-            <div class="field">
-              <label>Rua/Logradouro <span class="req">*</span></label>
-              <input type="text" id="inp-rua" placeholder="Ex: Rua das Flores" />
-            </div>
-            <div class="field-group">
-              <div class="field" style="flex:1">
-                <label>Número <span class="req">*</span></label>
-                <input type="text" id="inp-numero" placeholder="123" />
-              </div>
-              <div class="field" style="flex:2">
-                <label>Complemento</label>
-                <input type="text" id="inp-complemento" placeholder="Apto, bloco, sala..." />
-              </div>
-            </div>
-            <div class="field-group">
-              <div class="field" style="flex:1">
-                <label>Bairro <span class="req">*</span></label>
-                <input type="text" id="inp-bairro" placeholder="Bairro" />
-              </div>
-              <div class="field" style="flex:1">
-                <label>Cidade <span class="req">*</span></label>
-                <input type="text" id="inp-cidade" placeholder="Cidade" />
-              </div>
-              <div class="field" style="flex:0 0 120px">
-                <label>Estado/UF <span class="req">*</span></label>
-                <input type="text" id="inp-estado" placeholder="SP" maxlength="2" />
-              </div>
-            </div>
+            <input type="text" id="inp-inscricaoEstadual" placeholder="000.000.000.000" />
           </div>
         </div>
       </div>
@@ -311,15 +177,48 @@
         <div class="form-grid">
           <div class="field">
             <label>E-mail <span class="req">*</span></label>
-            <input type="email" placeholder="profissional@email.com" />
+            <input type="email" id="inp-email" placeholder="profissional@email.com" />
           </div>
           <div class="field">
             <label>Telefone <span class="req">*</span></label>
-            <input type="text" placeholder="(11) 98765-4321" id="inp-tel" />
+            <input type="text" id="inp-tel" placeholder="(11) 98765-4321" />
           </div>
-          <div class="field form-col-2">
+          <div class="field form-col-2 address-group">
             <label>Endereço</label>
-            <input type="text" placeholder="Ria, número, bairro, cidade — Estado, CEP" />
+            <div class="field-group" style="flex-direction:column; gap:8px;">
+              <div class="field">
+                <label>CEP <span class="req">*</span></label>
+                <input type="text" id="inp-cep" placeholder="00000-000" />
+              </div>
+              <div class="field">
+                <label>Rua/Logradouro <span class="req">*</span></label>
+                <input type="text" id="inp-rua" placeholder="Ex: Rua das Flores" />
+              </div>
+              <div class="field-group">
+                <div class="field" style="flex:1">
+                  <label>Número <span class="req">*</span></label>
+                  <input type="text" id="inp-numero" placeholder="123" />
+                </div>
+                <div class="field" style="flex:2">
+                  <label>Complemento</label>
+                  <input type="text" id="inp-complemento" placeholder="Apto, bloco, sala..." />
+                </div>
+              </div>
+              <div class="field-group">
+                <div class="field" style="flex:1">
+                  <label>Bairro <span class="req">*</span></label>
+                  <input type="text" id="inp-bairro" placeholder="Bairro" />
+                </div>
+                <div class="field" style="flex:1">
+                  <label>Cidade <span class="req">*</span></label>
+                  <input type="text" id="inp-cidade" placeholder="Cidade" />
+                </div>
+                <div class="field" style="flex:0 0 120px">
+                  <label>Estado/UF <span class="req">*</span></label>
+                  <input type="text" id="inp-estado" placeholder="SP" maxlength="2" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -327,198 +226,9 @@
     </div>
   </div>
 
-  <script>
-    const SPECIALTIES = [
-      'Neurologista Pediátrico', 'Fisioterapeuta', 'Fonoaudiólogo(a)', 'Psicólogo(a)',
-      'Terapeuta Ocupacional', 'Pediatra', 'Psiquiatra', 'Nutricionista', 'Ortopedista',
-      'Oftalmologista', 'Cardiologista', 'Endocrinologista', 'Assistente Social',
-      'Educador Físico', 'Musicoterapeuta', 'Arte Terapeuta'
-    ];
-    let selected = [];
+  <div id="form-message" style="max-width:920px;margin:12px auto;color:#b91c1c;font-weight:600;"></div>
 
-    function renderDropdown(list) {
-      const dd = document.getElementById('spec-dropdown');
-      dd.innerHTML = list.map(s =>
-        `<button class="spec-option" onmousedown="addSpec('${s}')">${s}</button>`
-      ).join('');
-    }
-    function filterSpecs() {
-      const q = document.getElementById('spec-input').value.toLowerCase();
-      const filtered = SPECIALTIES.filter(s => s.toLowerCase().includes(q) && !selected.includes(s));
-      renderDropdown(filtered);
-      document.getElementById('spec-dropdown').classList.add('open');
-    }
-    function openDropdown() {
-      renderDropdown(SPECIALTIES.filter(s => !selected.includes(s)));
-      document.getElementById('spec-dropdown').classList.add('open');
-    }
-    function closeDropdown() {
-      document.getElementById('spec-dropdown').classList.remove('open');
-    }
-    function addSpec(name) {
-      if (!selected.includes(name)) { selected.push(name); renderTags(); }
-      document.getElementById('spec-input').value = '';
-      closeDropdown();
-    }
-    function removeSpec(name) {
-      selected = selected.filter(s => s !== name);
-      renderTags();
-    }
-    function renderTags() {
-      document.getElementById('spec-tags').innerHTML = selected.map(s => `
-      <span class="tag" onclick="removeSpec('${s}')">
-        ${s}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </span>`).join('');
-    }
-
-    /* ── PJ TOGGLE ── */
-    function togglePJ() {
-      document.getElementById('pj-fields').classList.toggle('open', document.getElementById('pj-check').checked);
-    }
-
-    /* ── GERADOR DE SENHA AUTOMÁTICA ── */
-    function gerarSenhaAutomatica() {
-      const caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
-      let senha = "";
-      for (let i = 0; i < 8; i++) {
-        senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-      }
-      document.getElementById('inp-senha').value = senha;
-    }
-
-    document.getElementById('inp-cpf').addEventListener('input', function () {
-      let raw = this.value.replace(/\D/g, ''); // Apenas os números
-      let v = raw.slice(0, 11);
-
-      document.getElementById('inp-usuario').value = raw.slice(0, 11);
-
-      if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
-      else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
-      else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
-      this.value = v;
-    });
-
-    document.getElementById('inp-tel').addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 11);
-      if (v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-      else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-      this.value = v;
-    });
-
-    document.getElementById('inp-cnpj').addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 14);
-      if (v.length > 12) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, '$1.$2.$3/$4-$5');
-      else if (v.length > 8) v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{0,4})/, '$1.$2.$3/$4');
-      else if (v.length > 5) v = v.replace(/(\d{2})(\d{3})(\d{0,3})/, '$1.$2.$3');
-      else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,3})/, '$1.$2');
-      this.value = v;
-    });
-  </script>
-
-<div id="form-message" style="max-width:920px;margin:12px auto;color:#b91c1c;font-weight:600;"></div>
-
-<script type="module">
-  import { criarProfissional } from '../../js/profissionalService.js';
-  import { listarEspecialidades } from '../../js/services/especialidadeService.js';
-
-  // Carrega especialidades do backend e normaliza para {id, nome}
-  (async function loadSpecialties(){
-    try{
-      const res = await listarEspecialidades();
-      let list = [];
-      if (Array.isArray(res)) list = res;
-      else if (res && res.status && Array.isArray(res.body)) list = res.body;
-
-      SPECIALTIES = list.map((item, i) => {
-        if (item && typeof item === 'object') {
-          const id = item.id ?? item.idEspecialidade ?? item.codigo ?? (i + 1);
-          const nome = item.nome ?? item.name ?? item.descricao ?? item.label ?? String(item);
-          return { id: Number(id), nome };
-        }
-        return { id: i + 1, nome: String(item) };
-      });
-    }catch(err){
-      console.error('Erro ao carregar especialidades', err);
-    }
-  })();
-
-  // Endereço agora mapeado a partir de campos estruturados (veja inputs: inp-cep, inp-rua, inp-numero, inp-complemento, inp-bairro, inp-cidade, inp-estado)
-
-  function showMessage(msg, isError = true) {
-    const el = document.getElementById('form-message');
-    el.style.color = isError ? '#b91c1c' : '#064e3b';
-    el.textContent = msg;
-    if (!isError) setTimeout(() => el.textContent = '', 4000);
-  }
-
-  document.querySelector('.save-btn').addEventListener('click', async (e) => {
-    e.preventDefault();
-    showMessage('');
-
-    try {
-      const nome = document.getElementById('inp-nome').value.trim();
-      const cpf = document.getElementById('inp-cpf').value.replace(/\D/g,'');
-      const dataNascimento = document.getElementById('inp-dataNascimento').value || null;
-      const senhaProvisoria = document.getElementById('inp-senha').value || null;
-      const idEspecialidades = (window.selected && window.selected.length) ? window.selected : [1];
-      const registroProfissional = document.getElementById('inp-registro').value || null;
-      const estadoRegistro = document.getElementById('inp-estadoRegistro').value || null;
-      const cargaHorariaSemanal = document.getElementById('inp-carga').value || null;
-      const email = document.getElementById('inp-email').value || null;
-      const celular = document.getElementById('inp-tel').value.replace(/\D/g,'') || null;
-      const endereco = {
-        rua: (document.getElementById('inp-rua') && document.getElementById('inp-rua').value) || null,
-        numero: (document.getElementById('inp-numero') && document.getElementById('inp-numero').value) || null,
-        complemento: (document.getElementById('inp-complemento') && document.getElementById('inp-complemento').value) || null,
-        bairro: (document.getElementById('inp-bairro') && document.getElementById('inp-bairro').value) || null,
-        cidade: (document.getElementById('inp-cidade') && document.getElementById('inp-cidade').value) || null,
-        estado: (document.getElementById('inp-estado') && document.getElementById('inp-estado').value) || null,
-        cep: (document.getElementById('inp-cep') && document.getElementById('inp-cep').value.replace(/\D/g,'')) || null
-      };
-
-      const isPJ = document.getElementById('pj-check').checked;
-      const cnpj = isPJ ? (document.getElementById('inp-cnpj').value.replace(/\D/g,'') || null) : null;
-      const razaoSocial = isPJ ? (document.getElementById('inp-razaoSocial').value || null) : null;
-      const nomeFantasia = isPJ ? (document.getElementById('inp-nomeFantasia').value || null) : null;
-      const inscricaoEstadual = isPJ ? (document.getElementById('inp-inscricaoEstadual').value || null) : null;
-
-      const payload = {
-        nome,
-        cpf,
-        dataNascimento,
-        senhaProvisoria,
-        idEspecialidades,
-        registroProfissional,
-        estadoRegistro,
-        cargaHorariaSemanal,
-        email,
-        celular,
-        endereco,
-        cnpj,
-        razaoSocial,
-        nomeFantasia,
-        inscricaoEstadual
-      };
-
-      const res = await criarProfissional(payload);
-
-      if (res && res.status === 201) {
-        alert('Profissional criado com sucesso!');
-        showMessage('Profissional criado com sucesso.', false);
-        // opcional: limpar formulário ou redirecionar
-      } else {
-        showMessage('Resposta inesperada do servidor. Verifique os dados e tente novamente.');
-      }
-
-    } catch (err) {
-      console.error(err);
-      showMessage(err.message || 'Erro ao salvar profissional. Tente novamente.');
-    }
-  });
-</script>
+  <script type="module" src="./js/cadastro_profissional.js"></script>
 
 </body>
 
