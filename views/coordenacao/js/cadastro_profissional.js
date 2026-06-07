@@ -101,7 +101,7 @@ function gerarSenhaAutomatica() {
     const caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$';
     let senha = '';
     for (let i = 0; i < 8; i += 1) {
-        senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+        senha += caracteres.charAt(Math.floor(Math.floor(Math.random() * caracteres.length)));
     }
     get('inp-senha').value = senha;
 }
@@ -154,6 +154,49 @@ function showMessage(message, isError = true) {
     }
 }
 
+/* ── FUNÇÃO DE PREENCHIMENTO ATUALIZADA (Suporta Objeto e Array de Endereço) ── */
+function populateForm(prof) {
+    get('inp-nome').value = prof.nome || '';
+    get('inp-cpf').value = prof.cpf ? String(prof.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '';
+    get('inp-dataNascimento').value = prof.dataNascimento || '';
+    get('inp-registro').value = prof.registroProfissional || '';
+    get('inp-estadoRegistro').value = prof.estadoRegistro || '';
+    get('inp-carga').value = prof.cargaHorariaSemanal || '';
+    get('inp-email').value = prof.email || '';
+    get('inp-tel').value = prof.celular ? String(prof.celular).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '';
+
+    const sistemaId = prof.id ?? prof.idProfissional ?? prof.idCadastro ?? prof.usuario ?? '';
+    get('inp-usuario').value = String(sistemaId);
+    get('inp-senha').value = prof.senhaProvisoria ?? prof.senha ?? '';
+
+    // Tratamento seguro: aceita tanto prof.endereco quanto prof.enderecos[0]
+    let endereco = prof.endereco || {};
+    if (Array.isArray(prof.enderecos) && prof.enderecos.length > 0) {
+        endereco = prof.enderecos[0];
+    }
+    
+    get('inp-rua').value = endereco.rua || '';
+    get('inp-numero').value = endereco.numero || '';
+    get('inp-complemento').value = endereco.complemento || '';
+    get('inp-bairro').value = endereco.bairro || '';
+    get('inp-cidade').value = endereco.cidade || '';
+    get('inp-estado').value = endereco.estado || '';
+    get('inp-cep').value = endereco.cep ? String(endereco.cep).replace(/(\d{5})(\d{3})/, '$1-$2') : '';
+
+    const specs = Array.isArray(prof.especialidades) ? prof.especialidades : [];
+    selectedSpecialties = specs.map(normalizeSpecialty);
+    renderTags();
+
+    const hasPJ = Boolean(prof.cnpj || prof.razaoSocial || prof.nomeFantasia || prof.inscricaoEstadual || prof.isPJ);
+    pjCheck.checked = hasPJ;
+    pjFields.classList.toggle('open', hasPJ);
+    get('inp-cnpj').value = prof.cnpj ? String(prof.cnpj).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
+    get('inp-razaoSocial').value = prof.razaoSocial || '';
+    get('inp-nomeFantasia').value = prof.nomeFantasia || '';
+    get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
+}
+
+/* ── GERENCIADOR DE MODOS REORGANIZADO E UNIFICADO ── */
 async function loadProfessionalForEdit(id, mode = 'edit') {
     if (!id) return;
     try {
@@ -168,20 +211,46 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
             const subtitle = document.querySelector('header p');
             const buttonText = document.querySelector('.save-btn span');
 
-            if (viewMode) {
+            if (mode === 'view') {
                 if (title) title.textContent = 'Visualizar Profissional';
                 if (subtitle) subtitle.textContent = 'Consulta de dados do profissional';
                 if (buttonText) buttonText.textContent = 'Visualização';
+                
                 saveButton.disabled = true;
-                generatePasswordButton.style.display = 'none';
+                if (generatePasswordButton) generatePasswordButton.style.display = 'none';
+                if (accessDataSection) accessDataSection.style.display = 'none';
+                if (specInput) specInput.style.display = 'none';
+                
                 setFormReadOnly(true);
+            } else if (mode === 'edit_limited') {
+                if (title) title.textContent = 'Alterar Profissional';
+                if (subtitle) subtitle.textContent = 'Atualize os dados permitidos do corpo clínico';
+                if (buttonText) buttonText.textContent = 'Salvar Alterações';
+                
+                saveButton.disabled = false;
+                if (generatePasswordButton) generatePasswordButton.style.display = 'none';
+                if (accessDataSection) accessDataSection.style.display = 'none';
+                
+                setFormReadOnly(false);
+
+                // Ocultação seletiva solicitada para o modo limitado
+                document.getElementById('inp-cpf')?.closest('.field')?.style.setProperty('display', 'none');
+                document.getElementById('inp-dataNascimento')?.closest('.field')?.style.setProperty('display', 'none');
+                document.getElementById('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
+                document.getElementById('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
+                document.getElementById('pj-check')?.closest('.form-section')?.style.setProperty('display', 'none');
+                document.getElementById('inp-tel')?.closest('.field')?.style.setProperty('display', 'none');
+                document.querySelector('.address-group')?.style.setProperty('display', 'none');
             } else {
+                // Modo comum de Edição Completa
                 if (title) title.textContent = 'Editar Profissional';
                 if (subtitle) subtitle.textContent = 'Atualizar informações do profissional';
                 if (buttonText) buttonText.textContent = 'Salvar Alterações';
-                accessDataSection.style.display = 'none';
+                
+                if (accessDataSection) accessDataSection.style.display = 'none';
                 saveButton.disabled = false;
-                generatePasswordButton.style.display = '';
+                if (generatePasswordButton) generatePasswordButton.style.display = '';
+                
                 setFormReadOnly(false);
             }
         }
@@ -192,16 +261,9 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 }
 
 function setFormReadOnly(readOnly) {
-    const controls = document.querySelectorAll(
-        'input, select, button'
-    );
+    const controls = document.querySelectorAll('input, select, button');
     controls.forEach((control) => {
-        if (control === saveButton) {
-            control.disabled = readOnly;
-            return;
-        }
-        if (control === generatePasswordButton) {
-            control.disabled = readOnly;
+        if (control === saveButton || control === generatePasswordButton) {
             return;
         }
         if (control.type === 'button' && !control.matches('#btn-gerar-senha')) {
@@ -210,42 +272,6 @@ function setFormReadOnly(readOnly) {
         if (control.id === 'spec-dropdown') return;
         control.disabled = readOnly;
     });
-}
-
-function populateForm(prof) {
-    get('inp-nome').value = prof.nome || '';
-    get('inp-cpf').value = prof.cpf ? String(prof.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '';
-    get('inp-dataNascimento').value = prof.dataNascimento || '';
-    get('inp-registro').value = prof.registroProfissional || '';
-    get('inp-estadoRegistro').value = prof.estadoRegistro || '';
-    get('inp-carga').value = prof.cargaHorariaSemanal || '';
-    get('inp-email').value = prof.email || '';
-    get('inp-tel').value = prof.celular ? String(prof.celular).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '';
-
-    const sistemaId = prof.id ?? prof.usuario ?? '';
-    get('inp-usuario').value = String(sistemaId);
-    get('inp-senha').value = prof.senhaProvisoria ?? prof.senha ?? '';
-
-    const endereco = prof.endereco || {};
-    get('inp-rua').value = endereco.rua || '';
-    get('inp-numero').value = endereco.numero || '';
-    get('inp-complemento').value = endereco.complemento || '';
-    get('inp-bairro').value = endereco.bairro || '';
-    get('inp-cidade').value = endereco.cidade || '';
-    get('inp-estado').value = endereco.estado || '';
-    get('inp-cep').value = endereco.cep ? String(endereco.cep).replace(/(\d{5})(\d{3})/, '$1-$2') : '';
-
-    const specs = Array.isArray(prof.especialidades) ? prof.especialidades : [];
-    selectedSpecialties = specs.map(normalizeSpecialty);
-    renderTags();
-
-    const hasPJ = Boolean(prof.cnpj || prof.razaoSocial || prof.nomeFantasia || prof.inscricaoEstadual);
-    pjCheck.checked = hasPJ;
-    pjFields.classList.toggle('open', hasPJ);
-    get('inp-cnpj').value = prof.cnpj ? String(prof.cnpj).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
-    get('inp-razaoSocial').value = prof.razaoSocial || '';
-    get('inp-nomeFantasia').value = prof.nomeFantasia || '';
-    get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
 }
 
 async function loadSpecialties() {
@@ -355,42 +381,17 @@ function attachListeners() {
     get('inp-cep').addEventListener('input', formatCEP);
 }
 
+/* ── INICIALIZADOR UNIFICADO ── */
 async function initialize() {
     attachListeners();
     await loadSpecialties();
-    const professionalId = getQueryParam('id');
-    const mode = getQueryParam('mode');
-    if (professionalId) {
-        await loadProfessionalForEdit(Number(professionalId), mode === 'view' ? 'view' : 'edit');
-    }
     
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
+    const professionalId = getQueryParam('id');
+    const mode = getQueryParam('mode'); // pode vir 'view', 'edit_limited' ou null
 
-    if (mode === 'edit_limited') {
-        // 1. Altera os títulos da página para refletir a edição
-        const headerP = document.querySelector('header p');
-        const headerH1 = document.querySelector('header h1');
-        if (headerH1) headerH1.textContent = 'Alterar Profissional';
-        if (headerP) headerP.textContent = 'Atualize os dados permitidos do corpo clínico';
-
-        // 2. Esconde campos de Dados Pessoais (menos o Nome)
-        document.getElementById('inp-cpf')?.closest('.field')?.style.setProperty('display', 'none');
-        document.getElementById('inp-dataNascimento')?.closest('.field')?.style.setProperty('display', 'none');
-
-        // 3. Esconde a seção inteira de Dados de Acesso ao Sistema
-        document.getElementById('access-data-section')?.style.setProperty('display', 'none');
-
-        // 4. Esconde campos de Informações Profissionais desnecessários
-        document.getElementById('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
-        document.getElementById('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
-
-        // 5. Esconde a seção inteira de Pessoa Jurídica (PJ)
-        document.getElementById('pj-check')?.closest('.form-section')?.style.setProperty('display', 'none');
-
-        // 6. Esconde campos de Contato sobressalentes (mantendo apenas o e-mail)
-        document.getElementById('inp-tel')?.closest('.field')?.style.setProperty('display', 'none');
-        document.querySelector('.address-group')?.style.setProperty('display', 'none');
+    if (professionalId) {
+        // Passa o parâmetro 'mode' dinamicamente para o gerenciador centralizado
+        await loadProfessionalForEdit(Number(professionalId), mode || 'edit');
     }
 }
 
