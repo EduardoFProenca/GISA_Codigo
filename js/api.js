@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/gisa-api';
+const BASE_URL = 'https://backend-gisa.onrender.com';
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
