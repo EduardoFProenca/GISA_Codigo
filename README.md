@@ -54,7 +54,8 @@ GISA/
 ---
 
 ## Fluxo de autenticação
-
+ 
+ 
 ```
 index.html
   └─ models/Usuario.js  (carregado primeiro)
