@@ -88,7 +88,7 @@ function renderTags() {
         if (viewMode) {
             return `<span class="tag" style="padding-right: 12px;">${spec.nome}</span>`;
         }
-        
+
         // Renderização padrão para modo de criação/edição
         return `
         <span class="tag" data-remove-id="${spec.id}">
@@ -181,7 +181,7 @@ function populateForm(prof) {
     if (Array.isArray(prof.enderecos) && prof.enderecos.length > 0) {
         endereco = prof.enderecos[0];
     }
-    
+
     get('inp-rua').value = endereco.rua || '';
     get('inp-numero').value = endereco.numero || '';
     get('inp-complemento').value = endereco.complemento || '';
@@ -211,11 +211,11 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
         console.log("Resposta da API recebida:", res);
         if (res && res.status >= 200 && res.status < 300 && res.body) {
             const prof = res.body;
-            
+
             editId = id;
             // FIX: Define viewMode antes do populateForm para o renderTags saber se omite os 'X'
-            viewMode = mode === 'view'; 
-            
+            viewMode = mode === 'view';
+
             populateForm(prof);
 
             const title = document.querySelector('header h1');
@@ -226,22 +226,22 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
                 if (title) title.textContent = 'Visualizar Profissional';
                 if (subtitle) subtitle.textContent = 'Consulta de dados do profissional';
                 if (buttonText) buttonText.textContent = 'Visualização';
-                
+
                 saveButton.disabled = true;
                 if (generatePasswordButton) generatePasswordButton.style.display = 'none';
                 if (accessDataSection) accessDataSection.style.display = 'none';
                 if (specInput) specInput.style.display = 'none';
-                
+
                 setFormReadOnly(true);
             } else if (mode === 'edit_limited') {
                 if (title) title.textContent = 'Alterar Profissional';
                 if (subtitle) subtitle.textContent = 'Atualize os dados permitidos do corpo clínico';
                 if (buttonText) buttonText.textContent = 'Salvar Alterações';
-                
+
                 saveButton.disabled = false;
                 if (generatePasswordButton) generatePasswordButton.style.display = 'none';
                 if (accessDataSection) accessDataSection.style.display = 'none';
-                
+
                 setFormReadOnly(false);
 
                 document.getElementById('inp-cpf')?.closest('.field')?.style.setProperty('display', 'none');
@@ -255,11 +255,11 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
                 if (title) title.textContent = 'Editar Profissional';
                 if (subtitle) subtitle.textContent = 'Atualizar informações do profissional';
                 if (buttonText) buttonText.textContent = 'Salvar Alterações';
-                
+
                 if (accessDataSection) accessDataSection.style.display = 'none';
                 saveButton.disabled = false;
                 if (generatePasswordButton) generatePasswordButton.style.display = '';
-                
+
                 setFormReadOnly(false);
             }
         }
@@ -357,7 +357,12 @@ async function handleSave(event) {
             : await criarProfissional(payload);
 
         if (res && (res.status === 201 || res.status === 200)) {
-            showMessage(editId ? 'Profissional updated com sucesso.' : 'Profissional criado com sucesso.', false);
+            showMessage(editId ? 'Profissional atualizado com sucesso.' : 'Profissional criado com sucesso.', false);
+
+            // Retorna para a tela de gestão automaticamente após o sucesso
+            setTimeout(() => {
+                window.location.href = 'gestao_profissionais.html';
+            }, 1550);
         } else {
             showMessage('Resposta inesperada do servidor. Verifique os dados e tente novamente.');
         }
@@ -380,8 +385,8 @@ function attachListeners() {
     });
     specTags.addEventListener('click', (event) => {
         // Bloqueio de segurança: impede qualquer deleção se estiver no modo de visualização
-        if (viewMode) return; 
-        
+        if (viewMode) return;
+
         const removeButton = event.target.closest('[data-remove-id]');
         if (!removeButton) return;
         removeSpec(Number(removeButton.dataset.removeId));
@@ -397,10 +402,10 @@ function attachListeners() {
 async function initialize() {
     attachListeners();
     await loadSpecialties();
-    
+
     const professionalId = getQueryParam('id');
     console.log("ID capturado da URL:", professionalId);
-    const mode = getQueryParam('mode'); 
+    const mode = getQueryParam('mode');
 
     if (professionalId) {
         await loadProfessionalForEdit(Number(professionalId), mode || 'edit');

@@ -19,7 +19,7 @@ function initials(name) {
   return String(name || '').replace(/^Dr[a]?\.\s*/i, '').split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
 }
 
-/* Constrói os botões de ação com foco em Inativar */
+/* Constrói os botões de ação com foco em Inativar e Editar ativo */
 function actionButtons(p) {
   const idSg = p.id || p.idProfissional || p.codigo || '';
 
@@ -27,10 +27,11 @@ function actionButtons(p) {
   wrap.className = 'actions';
   wrap.innerHTML = `
   <button class="act-btn" title="Visualizar">${SVG_VIEW}</button>
-  <button class="act-btn" title="Editar" disabled style="opacity: 0.3; cursor: not-allowed; pointer-events: none;">${SVG_EDIT}</button>
+  <button class="act-btn" title="Editar">${SVG_EDIT}</button>
   <button class="act-btn danger" title="Inativar" data-id="${esc(idSg)}">${SVG_DEL}</button>`;
   
   wrap.querySelector('.act-btn[title="Visualizar"]').addEventListener('click', () => viewProfissional(idSg));
+  wrap.querySelector('.act-btn[title="Editar"]').addEventListener('click', () => editProfissional(idSg));
   wrap.querySelector('.danger').addEventListener('click', () => inativarProfissional(p));
   return wrap;
 }
@@ -39,7 +40,12 @@ function viewProfissional(id) {
   window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=view`;
 }
 
-/* ── MUDANÇA AQUI: Fluxo de Inativação Lógica ── */
+/* Redireciona para o formulário em modo de alteração restrita */
+function editProfissional(id) {
+  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=edit_limited`;
+}
+
+/* ── Fluxo de Inativação Lógica ── */
 async function inativarProfissional(p) {
   const id = p?.id || p?.idProfissional || p?.codigo;
 
@@ -49,17 +55,13 @@ async function inativarProfissional(p) {
     return;
   }
 
-  // Texto readequado para a proposta de Soft Delete
   if (!confirm(`Deseja realmente inativar o(a) profissional ${p.nome}?\nEle(a) sairá da listagem de funcionários ativos.`)) return;
 
   try {
-    // Dispara a requisição para o serviço
     const res = await apiDeletarProfissional(id);
 
     if (res && (res.status === 200 || res.status === 204)) {
       console.log(`[GISA] Profissional ${id} inativado com sucesso.`);
-      
-      // Filtra localmente removendo o registro da tabela para dar feedback visual imediato
       professionals = professionals.filter(item => String(item.id || item.idProfissional || item.codigo) !== String(id));
       filterTable();
     } else {
@@ -67,7 +69,7 @@ async function inativarProfissional(p) {
     }
   } catch (error) {
     console.error('[GISA] Erro ao processar a inativação:', error);
-    alert('Erro ao inativar o profissional. Certifique-se de que o seu backend Java foi alterado para fazer UPDATE do status em vez de DELETE físico.');
+    alert('Erro ao inativar o profissional.');
   }
 }
 
@@ -110,7 +112,6 @@ function renderTabela(list) {
     </tr>`;
   }).join('');
 
-  /* Injeta botões passando o objeto de dados estruturado por linha */
   list.forEach((p, index) => {
     const cell = tbody.querySelector(`[data-actions="${index}"]`);
     if (cell) cell.appendChild(actionButtons(p));
@@ -168,7 +169,7 @@ function renderCards(list) {
   });
 }
 
-/* ── Renderiza ambos (tabela + cards) e controla empty state ── */
+/* ── Renderiza ambos e controla empty state ── */
 function renderAll(list) {
   const empty = document.getElementById('empty');
 
