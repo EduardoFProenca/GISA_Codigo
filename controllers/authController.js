@@ -77,7 +77,7 @@ async function fazerLogin() {
     // ETAPA 2 & 3: Chamada Real da API (Assíncrona) e Verificação
     // =========================================================================
     // Ajuste a URL abaixo para o endpoint exato de login do seu Spring Boot
-    const resposta = await fetch('http://localhost:8080/gisa-api/api/usuarios/login', {
+    const resposta = await fetch('https://backend-gisa.onrender.com/gisa-api/api/usuarios/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ async function fazerLogin() {
     _salvarSessao(sessao);
 
     // Redireciona direto para o painel da coordenação
-    window.location.href = 'http://127.0.0.1:5500/views/coordenacao/dashboard.html';
+    window.location.href = 'https://eduardofproenca.github.io/GISA_Codigo/views/coordenacao/dashboard.html';
 
   } catch (erro) {
     console.error('Erro ao tentar conectar com o servidor:', erro);
@@ -183,8 +183,4 @@ function _resolverRaiz() {
 window.fazerLogin = fazerLogin;
 window.logout = logout;
 window.exigirLogin = exigirLogin;
-<<<<<<< HEAD
 window.getUsuario = getUsuario;
-=======
-window.getUsuario = getUsuario;
->>>>>>> 2a622ee91b27442f0fa19a8802872d234cc02af8
