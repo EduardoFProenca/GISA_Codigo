@@ -44,7 +44,10 @@ function normalizeSpecialty(item, index) {
     return { id: Number(id), nome };
 }
 
+/* ── FIX: Guarda de proteção adicionada ── */
 function filterSpecs() {
+    if (specInput && specInput.disabled) return; // Se o campo estiver travado, cancela a busca
+    
     const query = specInput.value.trim().toLowerCase();
     const filtered = specialties.filter((spec) => {
         const alreadySelected = selectedSpecialties.some((item) => item.id === spec.id);
@@ -54,7 +57,10 @@ function filterSpecs() {
     specDropdown.classList.add('open');
 }
 
+/* ── FIX: Guarda de proteção adicionada ── */
 function openDropdown() {
+    if (specInput && specInput.disabled) return; // Se o campo estiver travado, impede abertura do menu
+    
     renderDropdown(specialties.filter((spec) => !selectedSpecialties.some((item) => item.id === spec.id)));
     specDropdown.classList.add('open');
 }
@@ -81,15 +87,11 @@ function removeSpec(specId) {
     renderTags();
 }
 
-/* ── ALTERADO: Oculta o 'X' de remoção se estiver no modo de visualização ── */
 function renderTags() {
     specTags.innerHTML = selectedSpecialties.map((spec) => {
-        // Se estiver visualizando, renderiza a tag blindada (sem botão de fechar)
         if (viewMode) {
             return `<span class="tag" style="padding-right: 12px;">${spec.nome}</span>`;
         }
-
-        // Renderização padrão para modo de criação/edição
         return `
         <span class="tag" data-remove-id="${spec.id}">
           ${spec.nome}
@@ -198,12 +200,11 @@ function populateForm(prof) {
     pjCheck.checked = hasPJ;
     pjFields.classList.toggle('open', hasPJ);
     get('inp-cnpj').value = prof.cnpj ? String(prof.cnpj).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
-    get('inp-razaoSocial').value = prof.razaoSocial || '';
+    get('razaoSocial').value = prof.razaoSocial || '';
     get('inp-nomeFantasia').value = prof.nomeFantasia || '';
     get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
 }
 
-/* ── ALTERADO: Reordenamento crítico das propriedades de checagem de modo ── */
 async function loadProfessionalForEdit(id, mode = 'edit') {
     if (!id) return;
     try {
@@ -213,7 +214,6 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
             const prof = res.body;
 
             editId = id;
-            // FIX: Define viewMode antes do populateForm para o renderTags saber se omite os 'X'
             viewMode = mode === 'view';
 
             populateForm(prof);
@@ -244,13 +244,30 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 
                 setFormReadOnly(false);
 
-                document.getElementById('inp-cpf')?.closest('.field')?.style.setProperty('display', 'none');
-                document.getElementById('inp-dataNascimento')?.closest('.field')?.style.setProperty('display', 'none');
+                // ALTERADO: CPF, Data de Nascimento e Telefone foram removidos daqui para ficarem VISÍVEIS e editáveis
                 document.getElementById('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
                 document.getElementById('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
                 document.getElementById('pj-check')?.closest('.form-section')?.style.setProperty('display', 'none');
-                document.getElementById('inp-tel')?.closest('.field')?.style.setProperty('display', 'none');
                 document.querySelector('.address-group')?.style.setProperty('display', 'none');
+
+                // ── FIX: Aplicação robusta das travas e estilos para não-especialistas ──
+                const specs = prof.especialidades || [];
+                const temEspecialidade = Array.isArray(specs) && specs.length > 0;
+                
+                if (!temEspecialidade) {
+                    if (specInput) {
+                        specInput.disabled = true;
+                        specInput.style.setProperty('background-color', '#f1f5f9', 'important');
+                        specInput.style.setProperty('cursor', 'not-allowed', 'important');
+                    }
+
+                    const inpRegistro = get('inp-registro');
+                    if (inpRegistro) {
+                        inpRegistro.disabled = true;
+                        inpRegistro.style.setProperty('background-color', '#f1f5f9', 'important');
+                        inpRegistro.style.setProperty('cursor', 'not-allowed', 'important');
+                    }
+                }
             } else {
                 if (title) title.textContent = 'Editar Profissional';
                 if (subtitle) subtitle.textContent = 'Atualizar informações do profissional';
@@ -359,7 +376,6 @@ async function handleSave(event) {
         if (res && (res.status === 201 || res.status === 200)) {
             showMessage(editId ? 'Profissional atualizado com sucesso.' : 'Profissional criado com sucesso.', false);
 
-            // Retorna para a tela de gestão automaticamente após o sucesso
             setTimeout(() => {
                 window.location.href = 'gestao_profissionais.html';
             }, 1550);
@@ -372,7 +388,6 @@ async function handleSave(event) {
     }
 }
 
-/* ── ALTERADO: Trava interna contra cliques maliciosos no specTags ── */
 function attachListeners() {
     specInput.addEventListener('input', filterSpecs);
     specInput.addEventListener('focus', openDropdown);
@@ -384,7 +399,6 @@ function attachListeners() {
         addSpec(specId);
     });
     specTags.addEventListener('click', (event) => {
-        // Bloqueio de segurança: impede qualquer deleção se estiver no modo de visualização
         if (viewMode) return;
 
         const removeButton = event.target.closest('[data-remove-id]');
