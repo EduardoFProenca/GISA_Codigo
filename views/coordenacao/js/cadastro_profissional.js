@@ -199,7 +199,6 @@ function populateForm(prof) {
     pjFields.classList.toggle('open', hasPJ);
     
     get('inp-cnpj').value = prof.cnpj ? String(prof.cnpj).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
-    // FIX: ID corrigido de 'razaoSocial' para 'inp-razaoSocial' para sanar o erro do console
     get('inp-razaoSocial').value = prof.razaoSocial || ''; 
     get('inp-nomeFantasia').value = prof.nomeFantasia || '';
     get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
@@ -240,13 +239,10 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 
                 saveButton.disabled = false;
                 if (generatePasswordButton) generatePasswordButton.style.display = 'none';
-                
-                // Oculta completamente a seção de credenciais e senhas do sistema no update
                 if (accessDataSection) accessDataSection.style.display = 'none'; 
 
                 setFormReadOnly(false);
 
-                // ── FIX: Trava robusta para não-especialistas (Agora funcional pós-correção do formulário) ──
                 const specs = prof.especialidades || [];
                 const temEspecialidade = Array.isArray(specs) && specs.length > 0;
                 
@@ -317,35 +313,65 @@ async function loadSpecialties() {
     }
 }
 
+/* ── FUNÇÃO DE SALVAMENTO ATUALIZADA COM BARREIRAS DE VALIDAÇÃO ── */
 async function handleSave(event) {
     event.preventDefault();
     showMessage('');
 
+    // 1. Extração e limpeza prévia das strings para validação real
+    const nome = get('inp-nome').value.trim();
+    const cpf = get('inp-cpf').value.replace(/\D/g, '');
+    const dataNascimento = get('inp-dataNascimento').value || null;
+    const senhaProvisoria = get('inp-senha').value.trim();
+    const registroProfissional = get('inp-registro').value.trim();
+    const estadoRegistro = get('inp-estadoRegistro').value || null;
+    const cargaHorariaSemanal = get('inp-carga').value.trim() || null;
+    const email = get('inp-email').value.trim();
+    const celular = get('inp-tel').value.replace(/\D/g, '');
+    
+    const cep = get('inp-cep').value.replace(/\D/g, '');
+    const rua = get('inp-rua').value.trim();
+    const numero = get('inp-numero').value.trim();
+    const complemento = get('inp-complemento').value.trim() || null;
+    const bairro = get('inp-bairro').value.trim();
+    const cidade = get('inp-cidade').value.trim();
+    const estado = get('inp-estado').value.trim();
+
+    const isPJ = pjCheck.checked;
+    const cnpj = get('inp-cnpj').value.replace(/\D/g, '');
+    const razaoSocial = get('inp-razaoSocial').value.trim();
+    const nomeFantasia = get('inp-nomeFantasia').value.trim() || null;
+    const inscricaoEstadual = get('inp-inscricaoEstadual').value.trim() || null;
+
+    // 2. ── CONDICIONAIS DE GUARDA (CAMPOS OBRIGATÓRIOS GERAIS) ──
+    if (!nome) { showMessage('O campo Nome Completo é obrigatório.'); return; }
+    if (!cpf || cpf.length !== 11) { showMessage('O campo CPF é obrigatório e deve conter 11 dígitos.'); return; }
+    if (!editId && !senhaProvisoria) { showMessage('O campo Senha Provisória é obrigatório para novos cadastros.'); return; }
+    if (!email) { showMessage('O campo E-mail é obrigatório.'); return; }
+    if (!celular) { showMessage('O campo Telefone é obrigatório.'); return; }
+    
+    // 3. ── VALIDAÇÕES EXCLUSIVAS DO CORPO CLÍNICO (ESPECIALISTA OBRIGATÓRIO) ──
+    if (selectedSpecialties.length === 0) { showMessage('O campo Especialidade é obrigatório. Selecione ao menos uma.'); return; }
+    if (!registroProfissional) { showMessage('O campo Registro Profissional é obrigatório.'); return; }
+
+    // 4. ── VALIDAÇÕES DE ENDEREÇO ──
+    if (!cep || cep.length !== 8) { showMessage('O campo CEP é obrigatório e deve conter 8 dígitos.'); return; }
+    if (!rua) { showMessage('O campo Rua/Logradouro é obrigatório.'); return; }
+    if (!numero) { showMessage('O campo Número é obrigatório.'); return; }
+    if (!bairro) { showMessage('O campo Bairro é obrigatório.'); return; }
+    if (!cidade) { showMessage('O campo Cidade é obrigatório.'); return; }
+    if (!estado) { showMessage('O campo Estado/UF é obrigatório.'); return; }
+
+    // 5. ── VALIDAÇÕES CONDICIONAIS DE PESSOA JURÍDICA (PJ) ──
+    if (isPJ) {
+        if (!cnpj || cnpj.length !== 14) { showMessage('O campo CNPJ é obrigatório para PJ e deve conter 14 dígitos.'); return; }
+        if (!razaoSocial) { showMessage('O campo Razão Social é obrigatório para PJ.'); return; }
+    }
+
+    // Se passou por todas as barreiras acima, a montagem do payload e a chamada da API prosseguem com segurança
     try {
-        const nome = get('inp-nome').value.trim();
-        const cpf = get('inp-cpf').value.replace(/\D/g, '');
-        const dataNascimento = get('inp-dataNascimento').value || null;
-        const senhaProvisoria = editId ? undefined : get('inp-senha').value || null;
         const idEspecialidades = selectedSpecialties.map((spec) => spec.id);
-        const registroProfissional = get('inp-registro').value || null;
-        const estadoRegistro = get('inp-estadoRegistro').value || null;
-        const cargaHorariaSemanal = get('inp-carga').value || null;
-        const email = get('inp-email').value || null;
-        const celular = get('inp-tel').value.replace(/\D/g, '') || null;
-        const endereco = {
-            rua: get('inp-rua').value || null,
-            numero: get('inp-numero').value || null,
-            complemento: get('inp-complemento').value || null,
-            bairro: get('inp-bairro').value || null,
-            cidade: get('inp-cidade').value || null,
-            estado: get('inp-estado').value || null,
-            cep: get('inp-cep').value.replace(/\D/g, '') || null,
-        };
-        const isPJ = pjCheck.checked;
-        const cnpj = isPJ ? get('inp-cnpj').value.replace(/\D/g, '') || null : null;
-        const razaoSocial = isPJ ? get('inp-razaoSocial').value || null : null;
-        const nomeFantasia = isPJ ? get('inp-nomeFantasia').value || null : null;
-        const inscricaoEstadual = isPJ ? get('inp-inscricaoEstadual').value || null : null;
+        const endereco = { rua, numero, complemento, bairro, cidade, estado, cep };
 
         const payload = {
             nome,
@@ -359,10 +385,10 @@ async function handleSave(event) {
             email,
             celular,
             endereco,
-            cnpj,
-            razaoSocial,
-            nomeFantasia,
-            inscricaoEstadual,
+            cnpj: isPJ ? cnpj : null,
+            razaoSocial: isPJ ? razaoSocial : null,
+            nomeFantasia: isPJ ? nomeFantasia : null,
+            inscricaoEstadual: isPJ ? inscricaoEstadual : null,
         };
 
         const res = editId
