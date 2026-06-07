@@ -1,4 +1,4 @@
-import { listarProfissionais } from '../../../js/profissionalService.js';
+import { listarProfissionais, deletarProfissional as apiDeletarProfissional } from '../../../js/profissionalService.js';
 
 /* ── SVGs dos botões de ação ── */
 const SVG_VIEW = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -27,15 +27,36 @@ function actionButtons(id) {
   <button class="act-btn" title="Visualizar">${SVG_VIEW}</button>
   <button class="act-btn" title="Editar">${SVG_EDIT}</button>
   <button class="act-btn danger" title="Excluir" data-id="${esc(id)}">${SVG_DEL}</button>`;
+  wrap.querySelector('.act-btn[title="Visualizar"]').addEventListener('click', () => viewProfissional(id));
+  wrap.querySelector('.act-btn[title="Editar"]').addEventListener('click', () => editProfissional(id));
   wrap.querySelector('.danger').addEventListener('click', () => deleteProfissional(id));
   return wrap;
 }
 
-/* Exclui da lista mock e re-renderiza */
-function deleteProfissional(id) {
+function viewProfissional(id) {
+  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=view`;
+}
+
+function editProfissional(id) {
+  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}`;
+}
+
+/* Exclui o profissional no backend e atualiza a lista local */
+async function deleteProfissional(id) {
   if (!confirm('Confirma exclusão deste profissional?')) return;
-  professionals = professionals.filter(p => p.id !== id);
-  filterTable();
+
+  try {
+    const res = await apiDeletarProfissional(id);
+    if (res && (res.status === 200 || res.status === 204)) {
+      professionals = professionals.filter(p => p.id !== id);
+      filterTable();
+    } else {
+      throw new Error('Não foi possível excluir o profissional.');
+    }
+  } catch (error) {
+    console.error('Erro ao excluir profissional:', error);
+    alert('Erro ao excluir o profissional. Tente novamente.');
+  }
 }
 
 /* ── Renderiza TABELA (desktop) ── */
