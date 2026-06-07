@@ -19,17 +19,22 @@ function initials(name) {
   return String(name || '').replace(/^Dr[a]?\.\s*/i, '').split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
 }
 
-/* Constrói os botões de ação e registra o evento de exclusão */
-function actionButtons(id) {
+/* Constrói os botões de ação (Passando o objeto 'p' inteiro agora) */
+function actionButtons(p) {
+  // Tenta extrair o ID por caminhos comuns caso o nome varie
+  const idSg = p.id || p.idProfissional || p.codigo || '';
+
   const wrap = document.createElement('div');
   wrap.className = 'actions';
   wrap.innerHTML = `
   <button class="act-btn" title="Visualizar">${SVG_VIEW}</button>
-  <button class="act-btn" title="Editar">${SVG_EDIT}</button>
-  <button class="act-btn danger" title="Excluir" data-id="${esc(id)}">${SVG_DEL}</button>`;
-  wrap.querySelector('.act-btn[title="Visualizar"]').addEventListener('click', () => viewProfissional(id));
-  wrap.querySelector('.act-btn[title="Editar"]').addEventListener('click', () => editProfissional(id));
-  wrap.querySelector('.danger').addEventListener('click', () => deleteProfissional(id));
+  <button class="act-btn" title="Editar" disabled style="opacity: 0.3; cursor: not-allowed; pointer-events: none;">${SVG_EDIT}</button>
+  <button class="act-btn danger" title="Excluir" data-id="${esc(idSg)}">${SVG_DEL}</button>`;
+  
+  wrap.querySelector('.act-btn[title="Visualizar"]').addEventListener('click', () => viewProfissional(idSg));
+  // Evento do Editar removido temporariamente
+  wrap.querySelector('.danger').addEventListener('click', () => deleteProfissional(p)); 
+  
   return wrap;
 }
 
@@ -37,43 +42,37 @@ function viewProfissional(id) {
   window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=view`;
 }
 
-function editProfissional(id) {
-  // Adicionado &mode=edit_limited para avisar a próxima tela o que exibir
-  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=edit_limited`;
-}
+/* Exclui o profissional analisando o objeto completo */
+async function deleteProfissional(p) {
+  // Investiga o objeto no console para você ver a estrutura que veio do banco
+  console.log('[GISA] Objeto do profissional capturado no clique:', p);
 
-/* Exclui o profissional no backend e atualiza a lista local */
-async function deleteProfissional(id) {
-  // 🔍 Log de diagnóstico para rastrear o clique e o tipo do ID
-  console.log(`[GISA] Botão excluir clicado. ID recebido: ${id} (Tipo: ${typeof id})`);
+  // Tenta capturar o ID de propriedades alternativas comuns
+  const id = p?.id || p?.idProfissional || p?.codigo;
+  console.log(`[GISA] ID Identificado para envio: ${id} (Tipo: ${typeof id})`);
 
   if (id === undefined || id === null || id === '') {
-    console.error('[GISA] Erro crítico: O ID do profissional está vazio ou indefinido.');
-    alert('Erro: Não foi possível identificar o ID deste profissional para exclusão.');
+    console.error('[GISA] Erro crítico: Nenhuma propriedade de ID válida foi encontrada no objeto.', p);
+    alert('Erro crítico: Não foi possível identificar o ID deste profissional. Abra o Console (F12) para inspecionar as propriedades do objeto.');
     return;
   }
 
   if (!confirm('Confirma exclusão deste profissional?')) return;
 
   try {
-    // Envia o ID para o serviço da API
     const res = await apiDeletarProfissional(id);
-    console.log('[GISA] Resposta do servidor recebida:', res);
+    console.log('[GISA] Resposta da API de exclusão:', res);
 
     if (res && (res.status === 200 || res.status === 204)) {
-      console.log(`[GISA] Remoção bem-sucedida no banco. Atualizando interface...`);
-      
-      // FIX: Convertemos ambos para String para garantir que o filtro funcione independente de ser Number ou String
-      professionals = professionals.filter(p => String(p.id) !== String(id));
-      
-      // Re-renderiza a tabela atualizada
+      // Filtro seguro convertendo ambos os lados para String
+      professionals = professionals.filter(item => String(item.id || item.idProfissional || item.codigo) !== String(id));
       filterTable();
     } else {
-      throw new Error(`Servidor retornou status inesperado: ${res?.status}`);
+      throw new Error('Não foi possível excluir o profissional.');
     }
   } catch (error) {
-    console.error('[GISA] Falha na comunicação com a API de exclusão:', error);
-    alert('Erro ao excluir o profissional no servidor. Verifique a conexão e tente novamente.');
+    console.error('[GISA] Erro ao excluir profissional:', error);
+    alert('Erro ao excluir o profissional. Tente novamente.');
   }
 }
 
@@ -83,8 +82,8 @@ function renderTabela(list) {
   
   tbody.innerHTML = list.map((p, index) => {
     const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
+    const idSg = p.id || p.idProfissional || p.codigo || '';
     
-    // Transforma as especialidades em blocos HTML de Tags (Pills)
     const espList = temEspecialidade
       ? p.especialidades
           .map(e => {
@@ -99,7 +98,7 @@ function renderTabela(list) {
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
     
     return `
-    <tr data-id="${esc(p.id)}">
+    <tr data-id="${esc(idSg)}">
       <td>
         <div class="prof-cell">
           <div class="avatar">${esc(initials(p.nome))}</div>
@@ -116,10 +115,10 @@ function renderTabela(list) {
     </tr>`;
   }).join('');
 
-  /* Injeta botões com eventos usando o index garantido por linha */
+  /* Injeta botões passando o objeto de dados estruturado por linha */
   list.forEach((p, index) => {
     const cell = tbody.querySelector(`[data-actions="${index}"]`);
-    if (cell) cell.appendChild(actionButtons(p.id));
+    if (cell) cell.appendChild(actionButtons(p)); 
   });
 }
 
@@ -130,6 +129,7 @@ function renderCards(list) {
 
   list.forEach(p => {
     const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
+    const idSg = p.id || p.idProfissional || p.codigo || '';
     
     const espList = temEspecialidade
       ? p.especialidades
@@ -166,9 +166,9 @@ function renderCards(list) {
         <span class="pc-value">${esc(p.email || '')}</span>
       </div>
     </div>
-    <div class="pc-footer" data-actions="${esc(p.id)}"></div>`;
+    <div class="pc-footer" data-actions="mobile-${esc(idSg)}"></div>`;
 
-    card.querySelector('.pc-footer').appendChild(actionButtons(p.id));
+    card.querySelector('[data-actions^="mobile-"]').appendChild(actionButtons(p));
     container.appendChild(card);
   });
 }
