@@ -42,9 +42,17 @@ function deleteProfissional(id) {
 function renderTabela(list) {
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = list.map(p => {
-    const espList = Array.isArray(p.especialidades) && p.especialidades.length
+    // Verifica se possui alguma especialidade cadastrada
+    const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
+    
+    // Define o texto da especialidade
+    const espList = temEspecialidade
       ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
-      : 'Não é um especialista';
+      : '-';
+      
+    // Define o texto do registro com base na mesma regra
+    const registro = temEspecialidade ? (p.registroProfissional || '-') : '-';
+    
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
     return `
     <tr data-id="${esc(p.id)}">
@@ -55,7 +63,7 @@ function renderTabela(list) {
         </div>
       </td>
       <td>${esc(espList)}</td>
-      <td class="muted col-registro">${esc(p.registroProfissional)}</td>
+      <td class="muted col-registro">${esc(registro)}</td>
       <td class="muted col-email">${esc(p.email || '')}</td>
       <td><span class="badge dot ${badge}">${esc(p.status)}</span></td>
       <td class="right" data-actions="${esc(p.id)}"></td>
@@ -75,9 +83,17 @@ function renderCards(list) {
   container.innerHTML = '';
 
   list.forEach(p => {
-    const espList = Array.isArray(p.especialidades) && p.especialidades.length
+    // Verifica se possui alguma especialidade cadastrada
+    const temEspecialidade = Array.isArray(p.especialidades) && p.especialidades.length;
+    
+    // Define o texto da especialidade
+    const espList = temEspecialidade
       ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
-      : 'Não é um especialista';
+      : '-';
+      
+    // Define o texto do registro com base na mesma regra
+    const registro = temEspecialidade ? (p.registroProfissional || '-') : '-';
+    
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
 
     const card = document.createElement('div');
@@ -95,7 +111,7 @@ function renderCards(list) {
       </div>
       <div class="pc-field">
         <span class="pc-label">Registro</span>
-        <span class="pc-value">${esc(p.registroProfissional)}</span>
+        <span class="pc-value">${esc(registro)}</span>
       </div>
       <div class="pc-field">
         <span class="pc-label">E-mail</span>
