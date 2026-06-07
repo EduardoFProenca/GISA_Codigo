@@ -42,7 +42,9 @@ function deleteProfissional(id) {
 function renderTabela(list) {
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = list.map(p => {
-    const esp = Array.isArray(p.especialidades) ? p.especialidades.map(e => e?.nome || '').join(', ') : '';
+    const espList = Array.isArray(p.especialidades) && p.especialidades.length
+      ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
+      : 'Não é um especialista';
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
     return `
     <tr data-id="${esc(p.id)}">
@@ -52,9 +54,9 @@ function renderTabela(list) {
           <span class="prof-name">${esc(p.nome)}</span>
         </div>
       </td>
-      <td>${esc(esp)}</td>
+      <td>${esc(espList)}</td>
       <td class="muted col-registro">${esc(p.registroProfissional)}</td>
-      <td class="muted col-email">${esc(p.email)}</td>
+      <td class="muted col-email">${esc(p.email || '')}</td>
       <td><span class="badge dot ${badge}">${esc(p.status)}</span></td>
       <td class="right" data-actions="${esc(p.id)}"></td>
     </tr>`;
@@ -73,7 +75,9 @@ function renderCards(list) {
   container.innerHTML = '';
 
   list.forEach(p => {
-    const esp = Array.isArray(p.especialidades) ? p.especialidades.map(e => e?.nome || '').join(', ') : '';
+    const espList = Array.isArray(p.especialidades) && p.especialidades.length
+      ? p.especialidades.map(e => e?.nome || '').filter(Boolean).join(', ')
+      : 'Não é um especialista';
     const badge = p.status === 'Ativo' ? 'green' : 'badge-gray';
 
     const card = document.createElement('div');
@@ -87,7 +91,7 @@ function renderCards(list) {
     <div class="pc-details">
       <div class="pc-field">
         <span class="pc-label">Especialidade</span>
-        <span class="pc-value">${esc(esp)}</span>
+        <span class="pc-value">${esc(espList)}</span>
       </div>
       <div class="pc-field">
         <span class="pc-label">Registro</span>
@@ -95,7 +99,7 @@ function renderCards(list) {
       </div>
       <div class="pc-field">
         <span class="pc-label">E-mail</span>
-        <span class="pc-value">${esc(p.email)}</span>
+        <span class="pc-value">${esc(p.email || '')}</span>
       </div>
     </div>
     <div class="pc-footer" data-actions="${esc(p.id)}"></div>`;
@@ -147,7 +151,14 @@ async function loadProfessionals(page = 0) {
     const res = await listarProfissionais(page, pageSize);
     if (res && res.status >= 200 && res.status < 300) {
       const data = res.body || {};
-      professionals = Array.isArray(data.content) ? data.content : [];
+      // Support both pageable response ({ content: [...] }) and direct array responses
+      if (Array.isArray(data)) {
+        professionals = data;
+      } else if (Array.isArray(data.content)) {
+        professionals = data.content;
+      } else {
+        professionals = [];
+      }
       currentPage = page;
       renderAll(professionals);
       updatePaginationButtons(data);
