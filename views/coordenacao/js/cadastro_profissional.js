@@ -201,6 +201,7 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
     if (!id) return;
     try {
         const res = await buscarProfissionalPorId(id);
+        console.log("Resposta da API recebida:", res);
         if (res && res.status >= 200 && res.status < 300 && res.body) {
             const prof = res.body;
             populateForm(prof);
@@ -387,6 +388,7 @@ async function initialize() {
     await loadSpecialties();
     
     const professionalId = getQueryParam('id');
+    console.log("ID capturado da URL:", professionalId);
     const mode = getQueryParam('mode'); // pode vir 'view', 'edit_limited' ou null
 
     if (professionalId) {
