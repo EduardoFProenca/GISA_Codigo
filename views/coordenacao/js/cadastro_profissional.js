@@ -243,22 +243,15 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 
                 setFormReadOnly(false);
 
+                // ── ALTERADO: Esconde fisicamente os blocos inteiros se não possuir especialidades cadastradas ──
                 const specs = prof.especialidades || [];
                 const temEspecialidade = Array.isArray(specs) && specs.length > 0;
                 
                 if (!temEspecialidade) {
-                    if (specInput) {
-                        specInput.disabled = true;
-                        specInput.style.setProperty('background-color', '#f1f5f9', 'important');
-                        specInput.style.setProperty('cursor', 'not-allowed', 'important');
-                    }
-
-                    const inpRegistro = get('inp-registro');
-                    if (inpRegistro) {
-                        inpRegistro.disabled = true;
-                        inpRegistro.style.setProperty('background-color', '#f1f5f9', 'important');
-                        inpRegistro.style.setProperty('cursor', 'not-allowed', 'important');
-                    }
+                    specInput?.closest('.field')?.style.setProperty('display', 'none');
+                    get('inp-registro')?.closest('.field')?.style.setProperty('display', 'none');
+                    get('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
+                    get('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
                 }
             } else {
                 if (title) title.textContent = 'Editar Profissional';
@@ -313,12 +306,10 @@ async function loadSpecialties() {
     }
 }
 
-/* ── FUNÇÃO DE SALVAMENTO ATUALIZADA COM BARREIRAS DE VALIDAÇÃO ── */
 async function handleSave(event) {
     event.preventDefault();
     showMessage('');
 
-    // 1. Extração e limpeza prévia das strings para validação real
     const nome = get('inp-nome').value.trim();
     const cpf = get('inp-cpf').value.replace(/\D/g, '');
     const dataNascimento = get('inp-dataNascimento').value || null;
@@ -343,32 +334,33 @@ async function handleSave(event) {
     const nomeFantasia = get('inp-nomeFantasia').value.trim() || null;
     const inscricaoEstadual = get('inp-inscricaoEstadual').value.trim() || null;
 
-    // 2. ── CONDICIONAIS DE GUARDA (CAMPOS OBRIGATÓRIOS GERAIS) ──
+    // Validações gerais básicas
     if (!nome) { showMessage('O campo Nome Completo é obrigatório.'); return; }
     if (!cpf || cpf.length !== 11) { showMessage('O campo CPF é obrigatório e deve conter 11 dígitos.'); return; }
     if (!editId && !senhaProvisoria) { showMessage('O campo Senha Provisória é obrigatório para novos cadastros.'); return; }
     if (!email) { showMessage('O campo E-mail é obrigatório.'); return; }
     if (!celular) { showMessage('O campo Telefone é obrigatório.'); return; }
     
-    // 3. ── VALIDAÇÕES EXCLUSIVAS DO CORPO CLÍNICO (ESPECIALISTA OBRIGATÓRIO) ──
-    if (selectedSpecialties.length === 0) { showMessage('O campo Especialidade é obrigatório. Selecione ao menos uma.'); return; }
-    if (!registroProfissional) { showMessage('O campo Registro Profissional é obrigatório.'); return; }
+    // ── ALTERADO: As travas clínicas só barram o envio se os campos estiverem visíveis no layout atual ──
+    const escondeClinico = get('inp-registro')?.closest('.field')?.style.display === 'none';
+    if (!escondeClinico) {
+        if (selectedSpecialties.length === 0) { showMessage('O campo Especialidade é obrigatório. Selecione ao menos uma.'); return; }
+        if (!registroProfissional) { showMessage('O campo Registro Profissional é obrigatório.'); return; }
+    }
 
-    // 4. ── VALIDAÇÕES DE ENDEREÇO ──
-    if (!cep || cep.length !== 8) { showMessage('O campo CEP é obrigatório e deve conter 8 dígitos.'); return; }
+    // Validações de endereço
+    if (!cep || cep.length !== 8) { showMessage('O campo CEP é obrigatório and deve conter 8 dígitos.'); return; }
     if (!rua) { showMessage('O campo Rua/Logradouro é obrigatório.'); return; }
     if (!numero) { showMessage('O campo Número é obrigatório.'); return; }
     if (!bairro) { showMessage('O campo Bairro é obrigatório.'); return; }
     if (!cidade) { showMessage('O campo Cidade é obrigatório.'); return; }
     if (!estado) { showMessage('O campo Estado/UF é obrigatório.'); return; }
 
-    // 5. ── VALIDAÇÕES CONDICIONAIS DE PESSOA JURÍDICA (PJ) ──
     if (isPJ) {
         if (!cnpj || cnpj.length !== 14) { showMessage('O campo CNPJ é obrigatório para PJ e deve conter 14 dígitos.'); return; }
         if (!razaoSocial) { showMessage('O campo Razão Social é obrigatório para PJ.'); return; }
     }
 
-    // Se passou por todas as barreiras acima, a montagem do payload e a chamada da API prosseguem com segurança
     try {
         const idEspecialidades = selectedSpecialties.map((spec) => spec.id);
         const endereco = { rua, numero, complemento, bairro, cidade, estado, cep };
