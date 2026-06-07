@@ -19,9 +19,8 @@ function initials(name) {
   return String(name || '').replace(/^Dr[a]?\.\s*/i, '').split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
 }
 
-/* Constrói os botões de ação (Passando o objeto 'p' inteiro agora) */
+/* Constrói os botões de ação com foco em Inativar */
 function actionButtons(p) {
-  // Tenta extrair o ID por caminhos comuns caso o nome varie
   const idSg = p.id || p.idProfissional || p.codigo || '';
 
   const wrap = document.createElement('div');
@@ -29,12 +28,10 @@ function actionButtons(p) {
   wrap.innerHTML = `
   <button class="act-btn" title="Visualizar">${SVG_VIEW}</button>
   <button class="act-btn" title="Editar" disabled style="opacity: 0.3; cursor: not-allowed; pointer-events: none;">${SVG_EDIT}</button>
-  <button class="act-btn danger" title="Excluir" data-id="${esc(idSg)}">${SVG_DEL}</button>`;
+  <button class="act-btn danger" title="Inativar" data-id="${esc(idSg)}">${SVG_DEL}</button>`;
   
   wrap.querySelector('.act-btn[title="Visualizar"]').addEventListener('click', () => viewProfissional(idSg));
-  // Evento do Editar removido temporariamente
-  wrap.querySelector('.danger').addEventListener('click', () => deleteProfissional(p)); 
-  
+  wrap.querySelector('.danger').addEventListener('click', () => inativarProfissional(p));
   return wrap;
 }
 
@@ -42,37 +39,35 @@ function viewProfissional(id) {
   window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=view`;
 }
 
-/* Exclui o profissional analisando o objeto completo */
-async function deleteProfissional(p) {
-  // Investiga o objeto no console para você ver a estrutura que veio do banco
-  console.log('[GISA] Objeto do profissional capturado no clique:', p);
-
-  // Tenta capturar o ID de propriedades alternativas comuns
+/* ── MUDANÇA AQUI: Fluxo de Inativação Lógica ── */
+async function inativarProfissional(p) {
   const id = p?.id || p?.idProfissional || p?.codigo;
-  console.log(`[GISA] ID Identificado para envio: ${id} (Tipo: ${typeof id})`);
 
   if (id === undefined || id === null || id === '') {
-    console.error('[GISA] Erro crítico: Nenhuma propriedade de ID válida foi encontrada no objeto.', p);
-    alert('Erro crítico: Não foi possível identificar o ID deste profissional. Abra o Console (F12) para inspecionar as propriedades do objeto.');
+    console.error('[GISA] Erro: Não foi possível mapear o ID identificador do objeto.', p);
+    alert('Erro: O ID do profissional não foi encontrado.');
     return;
   }
 
-  if (!confirm('Confirma exclusão deste profissional?')) return;
+  // Texto readequado para a proposta de Soft Delete
+  if (!confirm(`Deseja realmente inativar o(a) profissional ${p.nome}?\nEle(a) sairá da listagem de funcionários ativos.`)) return;
 
   try {
+    // Dispara a requisição para o serviço
     const res = await apiDeletarProfissional(id);
-    console.log('[GISA] Resposta da API de exclusão:', res);
 
     if (res && (res.status === 200 || res.status === 204)) {
-      // Filtro seguro convertendo ambos os lados para String
+      console.log(`[GISA] Profissional ${id} inativado com sucesso.`);
+      
+      // Filtra localmente removendo o registro da tabela para dar feedback visual imediato
       professionals = professionals.filter(item => String(item.id || item.idProfissional || item.codigo) !== String(id));
       filterTable();
     } else {
-      throw new Error('Não foi possível excluir o profissional.');
+      throw new Error('O servidor rejeitou a solicitação de inativação.');
     }
   } catch (error) {
-    console.error('[GISA] Erro ao excluir profissional:', error);
-    alert('Erro ao excluir o profissional. Tente novamente.');
+    console.error('[GISA] Erro ao processar a inativação:', error);
+    alert('Erro ao inativar o profissional. Certifique-se de que o seu backend Java foi alterado para fazer UPDATE do status em vez de DELETE físico.');
   }
 }
 
@@ -118,7 +113,7 @@ function renderTabela(list) {
   /* Injeta botões passando o objeto de dados estruturado por linha */
   list.forEach((p, index) => {
     const cell = tbody.querySelector(`[data-actions="${index}"]`);
-    if (cell) cell.appendChild(actionButtons(p)); 
+    if (cell) cell.appendChild(actionButtons(p));
   });
 }
 
