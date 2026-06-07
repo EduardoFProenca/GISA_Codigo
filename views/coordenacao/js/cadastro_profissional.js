@@ -44,9 +44,8 @@ function normalizeSpecialty(item, index) {
     return { id: Number(id), nome };
 }
 
-/* ── FIX: Guarda de proteção adicionada ── */
 function filterSpecs() {
-    if (specInput && specInput.disabled) return; // Se o campo estiver travado, cancela a busca
+    if (specInput && specInput.disabled) return; 
     
     const query = specInput.value.trim().toLowerCase();
     const filtered = specialties.filter((spec) => {
@@ -57,9 +56,8 @@ function filterSpecs() {
     specDropdown.classList.add('open');
 }
 
-/* ── FIX: Guarda de proteção adicionada ── */
 function openDropdown() {
-    if (specInput && specInput.disabled) return; // Se o campo estiver travado, impede abertura do menu
+    if (specInput && specInput.disabled) return; 
     
     renderDropdown(specialties.filter((spec) => !selectedSpecialties.some((item) => item.id === spec.id)));
     specDropdown.classList.add('open');
@@ -199,8 +197,10 @@ function populateForm(prof) {
     const hasPJ = Boolean(prof.cnpj || prof.razaoSocial || prof.nomeFantasia || prof.inscricaoEstadual || prof.isPJ);
     pjCheck.checked = hasPJ;
     pjFields.classList.toggle('open', hasPJ);
+    
     get('inp-cnpj').value = prof.cnpj ? String(prof.cnpj).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '';
-    get('razaoSocial').value = prof.razaoSocial || '';
+    // FIX: ID corrigido de 'razaoSocial' para 'inp-razaoSocial' para sanar o erro do console
+    get('inp-razaoSocial').value = prof.razaoSocial || ''; 
     get('inp-nomeFantasia').value = prof.nomeFantasia || '';
     get('inp-inscricaoEstadual').value = prof.inscricaoEstadual || '';
 }
@@ -240,17 +240,13 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 
                 saveButton.disabled = false;
                 if (generatePasswordButton) generatePasswordButton.style.display = 'none';
-                if (accessDataSection) accessDataSection.style.display = 'none';
+                
+                // Oculta completamente a seção de credenciais e senhas do sistema no update
+                if (accessDataSection) accessDataSection.style.display = 'none'; 
 
                 setFormReadOnly(false);
 
-                // ALTERADO: CPF, Data de Nascimento e Telefone foram removidos daqui para ficarem VISÍVEIS e editáveis
-                document.getElementById('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
-                document.getElementById('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
-                document.getElementById('pj-check')?.closest('.form-section')?.style.setProperty('display', 'none');
-                document.querySelector('.address-group')?.style.setProperty('display', 'none');
-
-                // ── FIX: Aplicação robusta das travas e estilos para não-especialistas ──
+                // ── FIX: Trava robusta para não-especialistas (Agora funcional pós-correção do formulário) ──
                 const specs = prof.especialidades || [];
                 const temEspecialidade = Array.isArray(specs) && specs.length > 0;
                 
