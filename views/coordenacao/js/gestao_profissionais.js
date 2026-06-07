@@ -38,24 +38,42 @@ function viewProfissional(id) {
 }
 
 function editProfissional(id) {
-  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}`;
+  // Adicionado &mode=edit_limited para avisar a próxima tela o que exibir
+  window.location.href = `cadastro_profissional.html?id=${encodeURIComponent(id)}&mode=edit_limited`;
 }
 
 /* Exclui o profissional no backend e atualiza a lista local */
 async function deleteProfissional(id) {
+  // 🔍 Log de diagnóstico para rastrear o clique e o tipo do ID
+  console.log(`[GISA] Botão excluir clicado. ID recebido: ${id} (Tipo: ${typeof id})`);
+
+  if (id === undefined || id === null || id === '') {
+    console.error('[GISA] Erro crítico: O ID do profissional está vazio ou indefinido.');
+    alert('Erro: Não foi possível identificar o ID deste profissional para exclusão.');
+    return;
+  }
+
   if (!confirm('Confirma exclusão deste profissional?')) return;
 
   try {
+    // Envia o ID para o serviço da API
     const res = await apiDeletarProfissional(id);
+    console.log('[GISA] Resposta do servidor recebida:', res);
+
     if (res && (res.status === 200 || res.status === 204)) {
-      professionals = professionals.filter(p => p.id !== id);
+      console.log(`[GISA] Remoção bem-sucedida no banco. Atualizando interface...`);
+      
+      // FIX: Convertemos ambos para String para garantir que o filtro funcione independente de ser Number ou String
+      professionals = professionals.filter(p => String(p.id) !== String(id));
+      
+      // Re-renderiza a tabela atualizada
       filterTable();
     } else {
-      throw new Error('Não foi possível excluir o profissional.');
+      throw new Error(`Servidor retornou status inesperado: ${res?.status}`);
     }
   } catch (error) {
-    console.error('Erro ao excluir profissional:', error);
-    alert('Erro ao excluir o profissional. Tente novamente.');
+    console.error('[GISA] Falha na comunicação com a API de exclusão:', error);
+    alert('Erro ao excluir o profissional no servidor. Verifique a conexão e tente novamente.');
   }
 }
 
