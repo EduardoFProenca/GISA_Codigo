@@ -168,8 +168,6 @@ function populateForm(prof) {
     get('inp-cpf').value = prof.cpf ? String(prof.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '';
     get('inp-dataNascimento').value = prof.dataNascimento || '';
     get('inp-registro').value = prof.registroProfissional || '';
-    get('inp-estadoRegistro').value = prof.estadoRegistro || '';
-    get('inp-carga').value = prof.cargaHorariaSemanal || '';
     get('inp-email').value = prof.email || '';
     get('inp-tel').value = prof.celular ? String(prof.celular).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '';
 
@@ -243,15 +241,13 @@ async function loadProfessionalForEdit(id, mode = 'edit') {
 
                 setFormReadOnly(false);
 
-                // ── ALTERADO: Esconde fisicamente os blocos inteiros se não possuir especialidades cadastradas ──
+                // ── LIMPO: Esconde apenas as especialidades e o registro de conselho remanescentes para não-clínicos ──
                 const specs = prof.especialidades || [];
                 const temEspecialidade = Array.isArray(specs) && specs.length > 0;
                 
                 if (!temEspecialidade) {
                     specInput?.closest('.field')?.style.setProperty('display', 'none');
                     get('inp-registro')?.closest('.field')?.style.setProperty('display', 'none');
-                    get('inp-estadoRegistro')?.closest('.field')?.style.setProperty('display', 'none');
-                    get('inp-carga')?.closest('.field')?.style.setProperty('display', 'none');
                 }
             } else {
                 if (title) title.textContent = 'Editar Profissional';
@@ -315,8 +311,6 @@ async function handleSave(event) {
     const dataNascimento = get('inp-dataNascimento').value || null;
     const senhaProvisoria = get('inp-senha').value.trim();
     const registroProfissional = get('inp-registro').value.trim();
-    const estadoRegistro = get('inp-estadoRegistro').value || null;
-    const cargaHorariaSemanal = get('inp-carga').value.trim() || null;
     const email = get('inp-email').value.trim();
     const celular = get('inp-tel').value.replace(/\D/g, '');
     
@@ -325,7 +319,7 @@ async function handleSave(event) {
     const numero = get('inp-numero').value.trim();
     const complemento = get('inp-complemento').value.trim() || null;
     const bairro = get('inp-bairro').value.trim();
-    const cidade = get('inp-cidade').value.trim();
+    const city = get('inp-cidade').value.trim();
     const estado = get('inp-estado').value.trim();
 
     const isPJ = pjCheck.checked;
@@ -341,7 +335,7 @@ async function handleSave(event) {
     if (!email) { showMessage('O campo E-mail é obrigatório.'); return; }
     if (!celular) { showMessage('O campo Telefone é obrigatório.'); return; }
     
-    // ── ALTERADO: As travas clínicas só barram o envio se os campos estiverem visíveis no layout atual ──
+    // ── LIMPO: Trava clínica simplificada, validando apenas o que restou visível na tela ──
     const escondeClinico = get('inp-registro')?.closest('.field')?.style.display === 'none';
     if (!escondeClinico) {
         if (selectedSpecialties.length === 0) { showMessage('O campo Especialidade é obrigatório. Selecione ao menos uma.'); return; }
@@ -349,11 +343,11 @@ async function handleSave(event) {
     }
 
     // Validações de endereço
-    if (!cep || cep.length !== 8) { showMessage('O campo CEP é obrigatório and deve conter 8 dígitos.'); return; }
+    if (!cep || cep.length !== 8) { showMessage('O campo CEP é obrigatório e deve conter 8 dígitos.'); return; }
     if (!rua) { showMessage('O campo Rua/Logradouro é obrigatório.'); return; }
     if (!numero) { showMessage('O campo Número é obrigatório.'); return; }
     if (!bairro) { showMessage('O campo Bairro é obrigatório.'); return; }
-    if (!cidade) { showMessage('O campo Cidade é obrigatório.'); return; }
+    if (!city) { showMessage('O campo Cidade é obrigatório.'); return; }
     if (!estado) { showMessage('O campo Estado/UF é obrigatório.'); return; }
 
     if (isPJ) {
@@ -363,7 +357,7 @@ async function handleSave(event) {
 
     try {
         const idEspecialidades = selectedSpecialties.map((spec) => spec.id);
-        const endereco = { rua, numero, complemento, bairro, cidade, estado, cep };
+        const endereco = { rua, numero, complemento, bairro, cidade: city, estado, cep };
 
         const payload = {
             nome,
@@ -372,8 +366,6 @@ async function handleSave(event) {
             ...(editId ? {} : { senhaProvisoria }),
             idEspecialidades,
             registroProfissional,
-            estadoRegistro,
-            cargaHorariaSemanal,
             email,
             celular,
             endereco,
@@ -388,7 +380,7 @@ async function handleSave(event) {
             : await criarProfissional(payload);
 
         if (res && (res.status === 201 || res.status === 200)) {
-            showMessage(editId ? 'Profissional atualizado com sucesso.' : 'Profissional criado com sucesso.', false);
+            showMessage(editId ? 'Profissional updated com sucesso.' : 'Profissional criado com sucesso.', false);
 
             setTimeout(() => {
                 window.location.href = 'gestao_profissionais.html';
